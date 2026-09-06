@@ -7,6 +7,7 @@ export interface ScanIssue {
   match: string;
   severity: 'high' | 'medium' | 'dummy';
   solution: string;
+  risk?: string;
 }
 
 export interface Scanner {

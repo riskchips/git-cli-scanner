@@ -24,21 +24,52 @@ async function scanFile(filePath: string, baseDir: string): Promise<void> {
     console.log(pc.green('\n  No vulnerabilities found in this file.\n'));
   } else {
     console.log(`\n  ${pc.bold(`Found ${fileIssues.length} issue(s):`)}\n`);
-    fileIssues.forEach((issue: any) => {
-      const severity = issue.severity === 'high'
-        ? pc.red('HIGH')
-        : issue.severity === 'medium'
-          ? pc.yellow('MEDIUM')
-          : pc.dim('DUMMY');
-      const indicator = issue.severity === 'dummy' ? pc.dim('○') : '●';
-      console.log(`  ${indicator} ${severity} ${pc.dim('·')} ${issue.type}`);
-      console.log(`    ${pc.dim('Line:')}  ${issue.line || '?'}`);
-      console.log(`    ${pc.dim('Match:')} ${issue.match.substring(0, 60)}`);
-      if (issue.solution) {
-        console.log(`    ${pc.dim('Fix:')}   ${pc.green(issue.solution)}`);
-      }
-      console.log();
+
+    // Sort by severity: high > medium > dummy
+    const severityWeight: Record<string, number> = { high: 3, medium: 2, dummy: 1 };
+    const sortedIssues = [...fileIssues].sort((a: any, b: any) => {
+      return (severityWeight[b.severity] || 0) - (severityWeight[a.severity] || 0);
     });
+
+    // Group by rule type to prevent fatigue
+    const grouped = new Map<string, any[]>();
+    for (const issue of sortedIssues) {
+      if (!grouped.has(issue.type)) {
+        grouped.set(issue.type, []);
+      }
+      grouped.get(issue.type)!.push(issue);
+    }
+
+    for (const [type, group] of grouped.entries()) {
+      const displayCount = Math.min(group.length, 3);
+      for (let i = 0; i < displayCount; i++) {
+        const issue = group[i];
+        const severity = issue.severity === 'high'
+          ? pc.red('HIGH')
+          : issue.severity === 'medium'
+            ? pc.yellow('MEDIUM')
+            : pc.dim('DUMMY');
+        const colorFn = issue.severity === 'high' ? pc.red : issue.severity === 'medium' ? pc.yellow : pc.dim;
+        const indicator = issue.severity === 'dummy' ? pc.dim('○') : colorFn('●');
+        
+        console.log(`  ${indicator} ${severity} ${pc.dim('·')} ${issue.type}`);
+        console.log(`    ${pc.dim('Line:')}  ${issue.line || '?'}`);
+        console.log(`    ${pc.dim('Match:')} ${issue.match.substring(0, 60)}`);
+        
+        if (issue.risk) {
+          console.log(`    ${pc.dim('Risk:')}  ${pc.yellow(issue.risk)}`);
+        }
+        
+        if (issue.solution) {
+          console.log(`    ${pc.dim('Fix:')}   ${pc.green(issue.solution)}`);
+        }
+        console.log();
+      }
+
+      if (group.length > 3) {
+        console.log(`    ${pc.cyan(`... and ${group.length - 3} more similar issues in this file.`)}\n`);
+      }
+    }
   }
 }
 

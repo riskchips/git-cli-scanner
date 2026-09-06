@@ -49,7 +49,8 @@ export const envFileScanner: Scanner = {
         line: 0,
         match: matchMsg,
         severity: severity,
-        solution: `Run 'echo "${filename}" >> .gitignore' to safely ignore this file type moving forward. If it's meant to be a template, rename it to '${filename}.example'.`
+        solution: `Run 'echo "${filename}" >> .gitignore' to safely ignore this file type moving forward. If it's meant to be a template, rename it to '${filename}.example'.`,
+        risk: 'Contains highly sensitive environment variables, database passwords, or SSL certificates that grant instant system access if leaked.'
       });
     }
 
