@@ -49,7 +49,7 @@ export const envFileScanner: Scanner = {
         line: 0,
         match: matchMsg,
         severity: severity,
-        solution: 'Add this file to .gitignore. If it is a template, rename it to .env.example.'
+        solution: `Run 'echo "${filename}" >> .gitignore' to safely ignore this file type moving forward. If it's meant to be a template, rename it to '${filename}.example'.`
       });
     }
 

@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('git-cli-scanner')
   .description('Interactive Git hooks vulnerability scanner')
-  .version('1.1.4');
+  .version('1.1.6');
 
 program
   .command('init')
