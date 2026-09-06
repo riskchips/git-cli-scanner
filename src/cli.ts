@@ -193,8 +193,8 @@ program
   .description('Launch an interactive Terminal UI to browse and scan files')
   .action(async () => {
     try {
-      const { explorePrompt } = require('./utils/explorer');
-      await explorePrompt({ currentDir: process.cwd() });
+      const { runExplorer } = require('./utils/explorer');
+      await runExplorer(process.cwd());
       process.exit(0);
     } catch (err: any) {
       if (err.name === 'ExitPromptError' || err.message?.includes('closed')) {
