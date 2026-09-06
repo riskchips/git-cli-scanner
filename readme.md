@@ -1,4 +1,4 @@
-# GitHub CLI Scanner
+# Git CLI Scanner
 
 A powerful, interactive CLI tool that scans your codebase for hardcoded secrets, API keys, passwords, private keys, and other vulnerabilities before they ever reach your Git history.
 
@@ -7,15 +7,14 @@ A powerful, interactive CLI tool that scans your codebase for hardcoded secrets,
 ## Installation
 
 ```bash
-npm install
-npm run build
+npm install -g git-cli-scanner
 ```
 
 ## Quick Start
 
 ```bash
 # Set up the pre-commit hook (one-time)
-npx github-cli-scanner init
+npx git-cli-scanner init
 
 # Now every time you run `git commit`, the scanner will automatically prompt you.
 ```
@@ -29,7 +28,7 @@ npx github-cli-scanner init
 Installs a Husky pre-commit hook that triggers the scanner automatically before every commit.
 
 ```bash
-npx github-cli-scanner init
+npx git-cli-scanner init
 ```
 
 ### `scan` — Scan staged files (Git hook mode)
@@ -37,8 +36,8 @@ npx github-cli-scanner init
 Interactively scans only the files you have staged (`git add`) for vulnerabilities. This is what the pre-commit hook runs.
 
 ```bash
-npx github-cli-scanner scan
-npx github-cli-scanner scan --show-sol   # Also show suggested fixes
+npx git-cli-scanner scan
+npx git-cli-scanner scan --show-sol   # Also show suggested fixes
 ```
 
 ### `scan-all` — Scan an entire directory
@@ -46,9 +45,9 @@ npx github-cli-scanner scan --show-sol   # Also show suggested fixes
 Recursively walks through a directory and scans every file for vulnerabilities. Skips `.git`, `node_modules`, `dist`, and `build` directories automatically.
 
 ```bash
-npx github-cli-scanner scan-all .              # Scan current directory
-npx github-cli-scanner scan-all ./src           # Scan only src/
-npx github-cli-scanner scan-all tests --show-sol  # Scan tests/ with solutions
+npx git-cli-scanner scan-all .              # Scan current directory
+npx git-cli-scanner scan-all ./src           # Scan only src/
+npx git-cli-scanner scan-all tests --show-sol  # Scan tests/ with solutions
 ```
 
 ### `explore` — Interactive file explorer TUI
@@ -56,7 +55,7 @@ npx github-cli-scanner scan-all tests --show-sol  # Scan tests/ with solutions
 Launch a fully interactive Terminal UI to browse your project and scan files on the fly.
 
 ```bash
-npx github-cli-scanner explore
+npx git-cli-scanner explore
 ```
 
 **Controls:**
@@ -116,37 +115,6 @@ DANGER: .env is NOT in .gitignore or .npmignore!
 | `●` | HIGH | Red | Hardcoded secrets that must be removed |
 | `●` | MEDIUM | Yellow | Risky files that should be in .gitignore |
 | `○` | IGNORED (DUMMY) | Dim | Detected but identified as a test/example value |
-
----
-
-## Project Structure
-
-```
-src/
-  cli.ts              # CLI entry point (commander)
-  scanner/
-    index.ts           # Main scanner orchestrator
-  scans/
-    apiKeys.ts         # API key & password detection
-    cloudProviders.ts  # AWS, GCP, Azure credential detection
-    collaboration.ts   # Slack, GitHub, Stripe, SendGrid, etc.
-    envFiles.ts        # .env & banned file type detection + gitignore check
-    privateKeys.ts     # RSA, OpenSSH, PGP private key detection
-    types.ts           # ScanIssue & Scanner interfaces
-  utils/
-    dummy.ts           # Strict dummy/test secret detection engine
-    explorer.ts        # Interactive TUI file explorer
-    fs.ts              # Recursive directory walker
-    git.ts             # Git diff utilities
-    logger.ts          # Minimalist CLI output formatting
-    prompts.ts         # Interactive prompts (inquirer)
-    spinner.ts         # Animated orange flower spinner
-tests/
-  scanner.test.ts      # Unit tests (vitest)
-  dummy-secrets.txt    # Manual test file with fake secrets
-  .env.dummy           # Test file for medium severity
-  test-db.sqlite       # Test file for banned extension detection
-```
 
 ---
 

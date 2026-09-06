@@ -11,7 +11,7 @@ import * as path from 'path';
 const program = new Command();
 
 program
-  .name('github-cli-scanner')
+  .name('git-cli-scanner')
   .description('Interactive Git hooks vulnerability scanner')
   .version('1.0.0');
 
@@ -30,7 +30,7 @@ program
       const hookContent = `
 # exec < /dev/tty is required to allow interactive prompts in git hooks
 exec < /dev/tty
-npx github-cli-scanner scan
+npx git-cli-scanner scan
 `.trim();
 
       fs.writeFileSync(hookPath, hookContent, 'utf-8');
