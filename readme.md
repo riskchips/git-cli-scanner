@@ -1,1 +1,163 @@
-INITIAL
+# GitHub CLI Scanner
+
+A powerful, interactive CLI tool that scans your codebase for hardcoded secrets, API keys, passwords, private keys, and other vulnerabilities before they ever reach your Git history.
+
+---
+
+## Installation
+
+```bash
+npm install
+npm run build
+```
+
+## Quick Start
+
+```bash
+# Set up the pre-commit hook (one-time)
+npx github-cli-scanner init
+
+# Now every time you run `git commit`, the scanner will automatically prompt you.
+```
+
+---
+
+## Commands
+
+### `init` — Set up Git hooks
+
+Installs a Husky pre-commit hook that triggers the scanner automatically before every commit.
+
+```bash
+npx github-cli-scanner init
+```
+
+### `scan` — Scan staged files (Git hook mode)
+
+Interactively scans only the files you have staged (`git add`) for vulnerabilities. This is what the pre-commit hook runs.
+
+```bash
+npx github-cli-scanner scan
+npx github-cli-scanner scan --show-sol   # Also show suggested fixes
+```
+
+### `scan-all` — Scan an entire directory
+
+Recursively walks through a directory and scans every file for vulnerabilities. Skips `.git`, `node_modules`, `dist`, and `build` directories automatically.
+
+```bash
+npx github-cli-scanner scan-all .              # Scan current directory
+npx github-cli-scanner scan-all ./src           # Scan only src/
+npx github-cli-scanner scan-all tests --show-sol  # Scan tests/ with solutions
+```
+
+### `explore` — Interactive file explorer TUI
+
+Launch a fully interactive Terminal UI to browse your project and scan files on the fly.
+
+```bash
+npx github-cli-scanner explore
+```
+
+**Controls:**
+| Key | Action |
+|-----|--------|
+| `Up / Down` | Move cursor through files and folders |
+| `Right / Enter` | Open a folder or scan a file |
+| `Left` | Go back to parent directory |
+| `Ctrl+C` | Exit the explorer |
+
+---
+
+## Flags
+
+| Flag | Available On | Description |
+|------|-------------|-------------|
+| `--show-sol` | `scan`, `scan-all` | Show actionable fix suggestions for each vulnerability |
+
+---
+
+## What It Detects
+
+### HIGH Severity (Red)
+- AWS Access Keys & Secret Keys
+- Google Cloud API Keys
+- Slack Tokens & Webhooks
+- GitHub Personal Access Tokens & OAuth Tokens
+- Stripe API Keys
+- SendGrid, Mailgun, and Twilio Tokens
+- RSA, OpenSSH, and PGP Private Keys
+- Generic API keys, passwords, and passphrases (any format like `api_key`, `api-key`, `API_KEY`, etc.)
+
+### MEDIUM Severity (Yellow)
+- `.env` files not listed in `.gitignore`
+- Banned file types: `.pem`, `.key`, `.sqlite`, `.db`, `.log`, `.p12`, `.pfx`
+- `node_modules/` committed to the repo
+
+### Dummy Detection (Dimmed)
+The scanner has a strict dummy detection engine that automatically identifies obvious test/example secrets (like `AKIAIOSFODNN7EXAMPLE` or values containing `test`, `dummy`, `sample`, etc.) and downgrades them so they don't block your workflow.
+
+---
+
+## Gitignore Awareness
+
+The scanner checks if banned files (like `.env`, `.sqlite`, `.pem`) are listed in your `.gitignore` or `.npmignore`. If they are, the issue is downgraded to a safe "IGNORED" status. If they are NOT, you get a loud warning:
+
+```
+DANGER: .env is NOT in .gitignore or .npmignore!
+```
+
+---
+
+## Severity Levels
+
+| Indicator | Level | Color | Meaning |
+|-----------|-------|-------|---------|
+| `●` | HIGH | Red | Hardcoded secrets that must be removed |
+| `●` | MEDIUM | Yellow | Risky files that should be in .gitignore |
+| `○` | IGNORED (DUMMY) | Dim | Detected but identified as a test/example value |
+
+---
+
+## Project Structure
+
+```
+src/
+  cli.ts              # CLI entry point (commander)
+  scanner/
+    index.ts           # Main scanner orchestrator
+  scans/
+    apiKeys.ts         # API key & password detection
+    cloudProviders.ts  # AWS, GCP, Azure credential detection
+    collaboration.ts   # Slack, GitHub, Stripe, SendGrid, etc.
+    envFiles.ts        # .env & banned file type detection + gitignore check
+    privateKeys.ts     # RSA, OpenSSH, PGP private key detection
+    types.ts           # ScanIssue & Scanner interfaces
+  utils/
+    dummy.ts           # Strict dummy/test secret detection engine
+    explorer.ts        # Interactive TUI file explorer
+    fs.ts              # Recursive directory walker
+    git.ts             # Git diff utilities
+    logger.ts          # Minimalist CLI output formatting
+    prompts.ts         # Interactive prompts (inquirer)
+    spinner.ts         # Animated orange flower spinner
+tests/
+  scanner.test.ts      # Unit tests (vitest)
+  dummy-secrets.txt    # Manual test file with fake secrets
+  .env.dummy           # Test file for medium severity
+  test-db.sqlite       # Test file for banned extension detection
+```
+
+---
+
+## Running Tests
+
+```bash
+npm test
+```
+
+---
+
+## License
+
+ISC
