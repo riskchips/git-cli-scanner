@@ -1,2 +1,2 @@
 export { scanFiles, scanDiff } from './scanner';
-export { rules } from './scanner/rules';
+export { allScanners as scanners } from './scans';

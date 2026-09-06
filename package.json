@@ -4,7 +4,7 @@
   "description": "INITIAL",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "build": "tsup src/cli.ts --format cjs",
     "prepare": "husky"
   },

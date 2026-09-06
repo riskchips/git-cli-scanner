@@ -1,46 +1,13 @@
-import { getStagedDiff } from '../utils/git';
-import { rules } from './rules';
-
-export interface ScanIssue {
-  type: string;
-  file: string;
-  line: number;
-  match: string;
-}
+import { getStagedDiff, GitDiff } from '../utils/git';
+import { allScanners, ScanIssue } from '../scans';
 
 export async function scanDiff(): Promise<ScanIssue[]> {
-  const diffs = await getStagedDiff();
+  const diffs: GitDiff[] = await getStagedDiff();
   const issues: ScanIssue[] = [];
 
   for (const diff of diffs) {
-    // Check for banned files/directories first
-    if (diff.file.includes('.env') || diff.file.startsWith('node_modules/')) {
-      issues.push({
-        type: 'banned-file-committed',
-        file: diff.file,
-        line: 0, // 0 indicates it's a file-level issue
-        match: `File or directory should be ignored (e.g., via .gitignore)`
-      });
-    }
-
-    const lines = diff.content.split('\n');
-    let lineNumber = 1; // Simplification, in reality you'd parse git diff line numbers
-
-    for (const line of lines) {
-      if (line.startsWith('+')) { // Only check added lines
-        const cleanLine = line.substring(1);
-        for (const rule of rules) {
-          if (rule.pattern.test(cleanLine)) {
-            issues.push({
-              type: rule.id,
-              file: diff.file,
-              line: lineNumber,
-              match: cleanLine.trim().substring(0, 50) + '...' // truncate for output
-            });
-          }
-        }
-      }
-      lineNumber++;
+    for (const scanner of allScanners) {
+      issues.push(...scanner.scan(diff));
     }
   }
 
@@ -48,6 +15,8 @@ export async function scanDiff(): Promise<ScanIssue[]> {
 }
 
 export async function scanFiles(files: string[]): Promise<ScanIssue[]> {
-    // Placeholder for scanning specific files, useful for programmatic usage
+    // Placeholder for scanning specific files programmatically
     return [];
 }
+
+export { ScanIssue };
