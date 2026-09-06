@@ -54,11 +54,17 @@ program
         process.exit(0);
       }
 
-      const spinner = new Spinner('Scanning staged files for vulnerabilities...');
+      const spinner = new Spinner([
+        'Scanning staged files for vulnerabilities...',
+        'Analyzing code patterns...',
+        'Checking for exposed API keys...',
+        'Inspecting hidden files and directories...',
+        'Thinking...'
+      ]);
       spinner.start();
       
       // Simulate a small delay for UX so the animation is visible
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
       const issues = await scanDiff();
       
