@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('git-cli-scanner')
   .description('Interactive Git hooks vulnerability scanner')
-  .version('1.2.0');
+  .version('1.2.1');
 
 program
   .command('init')
@@ -43,6 +43,15 @@ npx git-cli-scanner scan --hook
 `;
 
       fs.writeFileSync(hookPath, hookContent, { mode: 0o755 });
+      
+      // If the user previously used Husky, core.hooksPath might be set to .husky/
+      // Unset it so it falls back to the default .git/hooks path
+      try {
+        execSync('git config --unset core.hooksPath', { stdio: 'ignore' });
+      } catch (e) {
+        // Ignore if not set
+      }
+
       success('Pre-commit hook installed!');
       info('Every `git commit` will now automatically scan your staged files.');
     } catch (err: any) {
