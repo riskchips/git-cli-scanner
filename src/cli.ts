@@ -69,15 +69,18 @@ program
       const issues = await scanDiff();
       
       if (issues.length > 0) {
-        spinner.fail(`Found ${issues.length} potential vulnerabilities!`);
-        issues.forEach(issue => {
-          const pc = require('picocolors');
-          const color = issue.severity === 'high' ? pc.red : pc.yellow;
-          const severityLabel = issue.severity.toUpperCase();
-          
-          console.error(color(`\n- [${severityLabel}] [${issue.type}] File: ${issue.file}, Line: ${issue.line}`));
-          console.error(color(`  Match: ${issue.match}`));
-        });
+        // Filter out dummy issues from blocking the commit, but still print them
+        const blockerIssues = issues.filter(i => i.severity !== 'dummy');
+        
+        spinner.fail(`Found ${issues.length} potential vulnerabilities! (${blockerIssues.length} blockers)`);
+        
+        const { printIssues } = require('./utils/logger');
+        printIssues(issues);
+
+        if (blockerIssues.length === 0) {
+          info('No high or medium vulnerabilities found. Safe to commit!');
+          process.exit(0);
+        }
 
         const shouldContinue = await askToContinue();
         if (shouldContinue) {
@@ -128,16 +131,18 @@ program
       const issues = await scanDirectory(scanDir);
       
       if (issues.length > 0) {
-        spinner.fail(`Found ${issues.length} potential vulnerabilities!`);
-        issues.forEach(issue => {
-          const pc = require('picocolors');
-          const color = issue.severity === 'high' ? pc.red : pc.yellow;
-          const severityLabel = issue.severity.toUpperCase();
-          
-          console.error(color(`\n- [${severityLabel}] [${issue.type}] File: ${issue.file}, Line: ${issue.line}`));
-          console.error(color(`  Match: ${issue.match}`));
-        });
-        process.exit(1);
+        const blockerIssues = issues.filter(i => i.severity !== 'dummy');
+        
+        spinner.fail(`Found ${issues.length} potential vulnerabilities! (${blockerIssues.length} blockers)`);
+        
+        const { printIssues } = require('./utils/logger');
+        printIssues(issues);
+        
+        if (blockerIssues.length > 0) {
+          process.exit(1);
+        } else {
+          process.exit(0);
+        }
       } else {
         spinner.stop('No vulnerabilities found. Directory is safe!');
         process.exit(0);

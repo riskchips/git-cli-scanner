@@ -1,6 +1,7 @@
 import { getStagedDiff, GitDiff } from '../utils/git';
 import { allScanners, ScanIssue } from '../scans';
 import { walkDirectory } from '../utils/fs';
+import { isDummySecret } from '../utils/dummy';
 
 export async function scanDiff(): Promise<ScanIssue[]> {
   const diffs: GitDiff[] = await getStagedDiff();
@@ -32,6 +33,13 @@ export async function scanDirectory(dirPath: string): Promise<ScanIssue[]> {
     };
     for (const scanner of allScanners) {
       issues.push(...scanner.scan(mockDiff));
+    }
+  }
+
+  // Process dummy detection
+  for (const issue of issues) {
+    if (isDummySecret(issue.match)) {
+      issue.severity = 'dummy';
     }
   }
 
