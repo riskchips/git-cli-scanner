@@ -17,25 +17,34 @@ program
 
 program
   .command('init')
-  .description('Initialize husky and add the pre-commit hook automatically')
+  .description('Install pre-commit hook for automatic scanning')
   .action(() => {
-    info('Setting up git hooks with husky...');
+    info('Setting up pre-commit hook...');
     try {
-      execSync('npx husky init', { stdio: 'inherit' });
-      
-      const hookPath = path.join(process.cwd(), '.husky', 'pre-commit');
-      // For interactive hooks, we need to read from /dev/tty
-      // Husky executes hooks as shell scripts. To allow interactive prompts,
-      // we attach the command's stdin to the tty.
-      const hookContent = `
+      // Check if .git exists
+      const gitDir = path.join(process.cwd(), '.git');
+      if (!fs.existsSync(gitDir)) {
+        error('Not a git repository. Run `git init` first.');
+        process.exit(1);
+      }
+
+      // Create hooks directory if it doesn't exist
+      const hooksDir = path.join(gitDir, 'hooks');
+      if (!fs.existsSync(hooksDir)) {
+        fs.mkdirSync(hooksDir, { recursive: true });
+      }
+
+      const hookPath = path.join(hooksDir, 'pre-commit');
+      const hookContent = `#!/bin/sh
+# git-cli-scanner pre-commit hook
 # exec < /dev/tty is required to allow interactive prompts in git hooks
 exec < /dev/tty
 npx git-cli-scanner scan
-`.trim();
+`;
 
-      fs.writeFileSync(hookPath, hookContent, 'utf-8');
-      success('Successfully installed pre-commit hook!');
-      info('Next time you run `git commit`, the scanner will automatically scan your staged files.');
+      fs.writeFileSync(hookPath, hookContent, { mode: 0o755 });
+      success('Pre-commit hook installed!');
+      info('Every `git commit` will now automatically scan your staged files.');
     } catch (err: any) {
       error(`Failed to initialize: ${err.message}`);
     }
@@ -46,9 +55,21 @@ program
   .description('Remove the pre-commit hook and disable automatic scanning')
   .action(() => {
     try {
-      const hookPath = path.join(process.cwd(), '.husky', 'pre-commit');
-      if (fs.existsSync(hookPath)) {
-        fs.unlinkSync(hookPath);
+      // Check both .git/hooks and .husky locations
+      const gitHookPath = path.join(process.cwd(), '.git', 'hooks', 'pre-commit');
+      const huskyHookPath = path.join(process.cwd(), '.husky', 'pre-commit');
+      let removed = false;
+
+      if (fs.existsSync(gitHookPath)) {
+        fs.unlinkSync(gitHookPath);
+        removed = true;
+      }
+      if (fs.existsSync(huskyHookPath)) {
+        fs.unlinkSync(huskyHookPath);
+        removed = true;
+      }
+
+      if (removed) {
         success('Pre-commit hook removed. Automatic scanning is now disabled.');
       } else {
         info('No pre-commit hook found. Nothing to disable.');
