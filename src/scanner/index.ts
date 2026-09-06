@@ -13,6 +13,16 @@ export async function scanDiff(): Promise<ScanIssue[]> {
   const issues: ScanIssue[] = [];
 
   for (const diff of diffs) {
+    // Check for banned files/directories first
+    if (diff.file.includes('.env') || diff.file.startsWith('node_modules/')) {
+      issues.push({
+        type: 'banned-file-committed',
+        file: diff.file,
+        line: 0, // 0 indicates it's a file-level issue
+        match: `File or directory should be ignored (e.g., via .gitignore)`
+      });
+    }
+
     const lines = diff.content.split('\n');
     let lineNumber = 1; // Simplification, in reality you'd parse git diff line numbers
 
