@@ -16,24 +16,37 @@ npm install -g git-cli-scanner
 # Set up the pre-commit hook (one-time)
 npx git-cli-scanner init
 
-# Now every time you run `git commit`, the scanner will automatically prompt you.
+# Now every time you run `git commit`, the scanner will automatically
+# scan your staged files and warn you if vulnerabilities are found.
+# If issues are detected, you choose whether to continue or abort.
 ```
 
 ---
 
 ## Commands
 
-### `init` — Set up Git hooks
+### `init` — Enable automatic scanning
 
-Installs a Husky pre-commit hook that triggers the scanner automatically before every commit.
+Installs a Husky pre-commit hook that triggers the scanner automatically before every commit. When you run `git commit`, the scanner will:
+1. Automatically scan all staged files
+2. Show any vulnerabilities found
+3. Ask you if you want to continue or abort the commit
 
 ```bash
 npx git-cli-scanner init
 ```
 
-### `scan` — Scan staged files (Git hook mode)
+### `disable` — Disable automatic scanning
 
-Interactively scans only the files you have staged (`git add`) for vulnerabilities. This is what the pre-commit hook runs.
+Removes the pre-commit hook so the scanner no longer runs automatically on `git commit`.
+
+```bash
+npx git-cli-scanner disable
+```
+
+### `scan` — Scan staged files
+
+Scans only the files you have staged (`git add`) for vulnerabilities. This is what the pre-commit hook runs automatically. If issues are found, you get to choose whether to continue or abort.
 
 ```bash
 npx git-cli-scanner scan

@@ -35,9 +35,26 @@ npx git-cli-scanner scan
 
       fs.writeFileSync(hookPath, hookContent, 'utf-8');
       success('Successfully installed pre-commit hook!');
-      info('Next time you run `git commit`, the scanner will prompt you.');
+      info('Next time you run `git commit`, the scanner will automatically scan your staged files.');
     } catch (err: any) {
       error(`Failed to initialize: ${err.message}`);
+    }
+  });
+
+program
+  .command('disable')
+  .description('Remove the pre-commit hook and disable automatic scanning')
+  .action(() => {
+    try {
+      const hookPath = path.join(process.cwd(), '.husky', 'pre-commit');
+      if (fs.existsSync(hookPath)) {
+        fs.unlinkSync(hookPath);
+        success('Pre-commit hook removed. Automatic scanning is now disabled.');
+      } else {
+        info('No pre-commit hook found. Nothing to disable.');
+      }
+    } catch (err: any) {
+      error(`Failed to disable: ${err.message}`);
     }
   });
 
@@ -46,14 +63,9 @@ program
   .description('Interactive vulnerability scan for staged files')
   .option('--show-sol', 'Show solutions for vulnerabilities')
   .action(async (options) => {
-    info('GitHub CLI Scanner triggered by Git Hook.');
+    info('Git CLI Scanner running...');
     
     try {
-      const shouldScan = await askToScan();
-      if (!shouldScan) {
-        info('Skipping scan as requested. Proceeding with commit...');
-        process.exit(0);
-      }
 
       const spinner = new Spinner([
         'Scanning staged files for vulnerabilities...',

@@ -84,7 +84,7 @@ describe('File Path Checks', () => {
       { file: 'keys/private.pem', content: '...' }
     ]);
     const issues = await scanDiff();
-    expect(issues.filter(i => i.type === 'banned-file-committed').length).toBe(4);
+    expect(issues.filter(i => i.type === 'banned-file-type').length).toBe(4);
   });
 
   it('flags node_modules', async () => {
@@ -92,6 +92,6 @@ describe('File Path Checks', () => {
       { file: 'node_modules/lodash/index.js', content: '...' }
     ]);
     const issues = await scanDiff();
-    expect(issues.filter(i => i.type === 'banned-file-committed').length).toBe(1);
+    expect(issues.filter(i => i.type === 'banned-file-type').length).toBe(1);
   });
 });
