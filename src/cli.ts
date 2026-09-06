@@ -71,8 +71,12 @@ program
       if (issues.length > 0) {
         spinner.fail(`Found ${issues.length} potential vulnerabilities!`);
         issues.forEach(issue => {
-          console.error(`\n- [${issue.type}] File: ${issue.file}, Line: ${issue.line}`);
-          console.error(`  Match: ${issue.match}`);
+          const pc = require('picocolors');
+          const color = issue.severity === 'high' ? pc.red : pc.yellow;
+          const severityLabel = issue.severity.toUpperCase();
+          
+          console.error(color(`\n- [${severityLabel}] [${issue.type}] File: ${issue.file}, Line: ${issue.line}`));
+          console.error(color(`  Match: ${issue.match}`));
         });
 
         const shouldContinue = await askToContinue();

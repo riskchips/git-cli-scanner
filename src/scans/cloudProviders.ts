@@ -35,7 +35,8 @@ export const cloudProviderScanner: Scanner = {
               type: rule.id,
               file: diff.file,
               line: lineNumber,
-              match: cleanLine.trim().substring(0, 50) + '...'
+              match: cleanLine.trim().substring(0, 50) + '...',
+              severity: 'high'
             });
           }
         }

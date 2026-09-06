@@ -5,6 +5,7 @@ export interface ScanIssue {
   file: string;
   line: number;
   match: string;
+  severity: 'high' | 'medium';
 }
 
 export interface Scanner {

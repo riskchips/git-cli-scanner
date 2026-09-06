@@ -24,7 +24,8 @@ export const envFileScanner: Scanner = {
         type: 'banned-file-committed',
         file: diff.file,
         line: 0,
-        match: `File or directory should be ignored (e.g., via .gitignore)`
+        match: `File or directory should be ignored (e.g., via .gitignore)`,
+        severity: 'medium'
       });
     }
 
