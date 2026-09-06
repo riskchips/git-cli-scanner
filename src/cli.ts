@@ -44,7 +44,8 @@ npx github-cli-scanner scan
 program
   .command('scan')
   .description('Interactive vulnerability scan for staged files')
-  .action(async () => {
+  .option('--show-sol', 'Show solutions for vulnerabilities')
+  .action(async (options) => {
     info('GitHub CLI Scanner triggered by Git Hook.');
     
     try {
@@ -75,7 +76,7 @@ program
         spinner.fail(`Found ${issues.length} potential vulnerabilities! (${blockerIssues.length} blockers)`);
         
         const { printIssues } = require('./utils/logger');
-        printIssues(issues);
+        printIssues(issues, options.showSol);
 
         if (blockerIssues.length === 0) {
           info('No high or medium vulnerabilities found. Safe to commit!');
@@ -108,7 +109,8 @@ program
 program
   .command('scan-all [dir]')
   .description('Scan an entire directory or codebase for vulnerabilities')
-  .action(async (dir) => {
+  .option('--show-sol', 'Show solutions for vulnerabilities')
+  .action(async (dir, options) => {
     const scanDir = dir || process.cwd();
     info(`Scanning directory: ${scanDir}`);
     
@@ -136,7 +138,7 @@ program
         spinner.fail(`Found ${issues.length} potential vulnerabilities! (${blockerIssues.length} blockers)`);
         
         const { printIssues } = require('./utils/logger');
-        printIssues(issues);
+        printIssues(issues, options.showSol);
         
         if (blockerIssues.length > 0) {
           process.exit(1);
@@ -149,6 +151,23 @@ program
       }
     } catch (err: any) {
       error(`Scanner failed: ${err.message}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('explore')
+  .description('Launch an interactive Terminal UI to browse and scan files')
+  .action(async () => {
+    try {
+      const { explorePrompt } = require('./utils/explorer');
+      await explorePrompt({ currentDir: process.cwd() });
+      process.exit(0);
+    } catch (err: any) {
+      if (err.name === 'ExitPromptError' || err.message?.includes('closed')) {
+        process.exit(0);
+      }
+      error(`Explorer failed: ${err.message}`);
       process.exit(1);
     }
   });

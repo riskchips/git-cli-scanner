@@ -41,7 +41,8 @@ export const collaborationScanner: Scanner = {
               file: diff.file,
               line: lineNumber,
               match: cleanLine.trim().substring(0, 50) + '...',
-              severity: 'high'
+              severity: 'high',
+              solution: 'Use OAuth tokens or environment variables. Do not commit team tokens.'
             });
           }
         }

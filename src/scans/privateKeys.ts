@@ -36,7 +36,8 @@ export const privateKeyScanner: Scanner = {
               file: diff.file,
               line: lineNumber,
               match: cleanLine.trim().substring(0, 50) + '...',
-              severity: 'high'
+              severity: 'high',
+              solution: 'Never commit private keys. Revoke this key immediately if it was ever public, and use a secure key manager.'
             });
           }
         }

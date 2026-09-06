@@ -6,6 +6,7 @@ export interface ScanIssue {
   line: number;
   match: string;
   severity: 'high' | 'medium' | 'dummy';
+  solution: string;
 }
 
 export interface Scanner {

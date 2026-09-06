@@ -36,7 +36,8 @@ export const cloudProviderScanner: Scanner = {
               file: diff.file,
               line: lineNumber,
               match: cleanLine.trim().substring(0, 50) + '...',
-              severity: 'high'
+              severity: 'high',
+              solution: 'Move this cloud credential to IAM roles, Vault, or environment variables.'
             });
           }
         }

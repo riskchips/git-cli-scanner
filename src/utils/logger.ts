@@ -12,7 +12,7 @@ export function error(message: string) {
   console.error(pc.red('✖ error ') + message);
 }
 
-export function printIssues(issues: any[]) {
+export function printIssues(issues: any[], showSolution: boolean = false) {
   console.error('\n' + pc.bold('Scan Results:'));
   
   issues.forEach(issue => {
@@ -38,6 +38,10 @@ export function printIssues(issues: any[]) {
     console.error(`\n  ${colorFn(indicator)} ${colorFn(pc.bold(label))} ${pc.dim('·')} ${issue.type}`);
     console.error(`    ${pc.dim('File:')}  ${issue.file}:${issue.line || '?'}`);
     console.error(`    ${pc.dim('Match:')} ${displayMatch}`);
+    
+    if (showSolution && issue.solution) {
+      console.error(`    ${pc.dim('Fix:')}   ${pc.green(issue.solution)}`);
+    }
   });
   console.error();
 }

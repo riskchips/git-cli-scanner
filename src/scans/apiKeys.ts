@@ -51,7 +51,8 @@ export const apiKeyScanner: Scanner = {
               file: diff.file,
               line: lineNumber,
               match: cleanLine.trim().substring(0, 50) + '...',
-              severity: 'high'
+              severity: 'high',
+              solution: 'Store this key in a secret manager or environment variable. Never hardcode it.'
             });
           }
         }
