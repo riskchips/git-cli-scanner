@@ -1,6 +1,6 @@
 {
   "name": "git-cli-scanner",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "A powerful interactive CLI tool that scans your codebase for hardcoded secrets, API keys, passwords, and private keys before they reach your Git history.",
   "main": "dist/cli.js",
   "scripts": {
@@ -8,7 +8,16 @@
     "build": "tsup src/cli.ts --format cjs",
     "prepare": "husky"
   },
-  "keywords": ["security", "scanner", "git", "secrets", "api-keys", "cli", "pre-commit", "vulnerability"],
+  "keywords": [
+    "security",
+    "scanner",
+    "git",
+    "secrets",
+    "api-keys",
+    "cli",
+    "pre-commit",
+    "vulnerability"
+  ],
   "author": "riskchips",
   "license": "ISC",
   "dependencies": {
