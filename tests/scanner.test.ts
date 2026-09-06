@@ -60,20 +60,31 @@ describe('Scanner Modules', () => {
     expect(issues.some(i => i.type === 'rsa-private-key')).toBe(true);
   });
 
-  it('detects generic API keys', async () => {
-    const issues = await scanContent('api_key: "1234567890abcdef"');
-    expect(issues.some(i => i.type === 'generic-api-key')).toBe(true);
+  it('detects generic API keys, passwords, and passphrases', async () => {
+    const issues1 = await scanContent('api_key: "1234567890abcdef"');
+    const issues2 = await scanContent('api-key = "my-secret-key-123"');
+    const issues3 = await scanContent('API_KEY: "SOME_LONG_TOKEN_!"');
+    const issues4 = await scanContent('password = "SuperSecretPassword123!"');
+    const issues5 = await scanContent('passphrase: "Example-Passphrase-Not-Real"');
+
+    expect(issues1.some(i => i.type === 'generic-api-key')).toBe(true);
+    expect(issues2.some(i => i.type === 'generic-api-key')).toBe(true);
+    expect(issues3.some(i => i.type === 'generic-api-key')).toBe(true);
+    expect(issues4.some(i => i.type === 'generic-api-key')).toBe(true);
+    expect(issues5.some(i => i.type === 'generic-api-key')).toBe(true);
   });
 });
 
 describe('File Path Checks', () => {
-  it('flags .env files', async () => {
+  it('flags .env files and banned extensions', async () => {
     vi.spyOn(gitUtils, 'getStagedDiff').mockResolvedValue([
       { file: '.env', content: 'SOME_VAR=123' },
-      { file: 'src/.env.local', content: 'SOME_VAR=123' }
+      { file: 'src/.env.local', content: 'SOME_VAR=123' },
+      { file: 'database.sqlite', content: '...' },
+      { file: 'keys/private.pem', content: '...' }
     ]);
     const issues = await scanDiff();
-    expect(issues.filter(i => i.type === 'banned-file-committed').length).toBe(2);
+    expect(issues.filter(i => i.type === 'banned-file-committed').length).toBe(4);
   });
 
   it('flags node_modules', async () => {

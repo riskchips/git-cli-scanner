@@ -24,8 +24,8 @@ const rules = [
   },
   {
     id: 'generic-api-key',
-    description: 'Generic API Key / Secret',
-    pattern: /(?:api_?key|secret|token|password)[\s:=]+["'][a-zA-Z0-9\-_]{16,}["']/i,
+    description: 'Generic API Key / Secret / Password / Passphrase',
+    pattern: /(?:api[_\-]?key|secret|token|password|pwd|passphrase)[\s:=]+["'][a-zA-Z0-9\-_!@#$%^&*()=+]{8,}["']/i,
   },
   {
     id: 'generic-bearer-token',
