@@ -117,7 +117,7 @@ program
           process.exit(0);
         }
 
-        const shouldContinue = await askToContinue(options.hook);
+        const shouldContinue = await askToContinue(!!options.hook);
         if (shouldContinue) {
           info(options.hook ? 'Proceeding with commit despite vulnerabilities.' : 'Proceeding despite vulnerabilities.');
           process.exit(0);

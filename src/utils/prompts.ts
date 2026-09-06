@@ -7,7 +7,7 @@ export async function askToScan(): Promise<boolean> {
   });
 }
 
-export async function askToContinue(isHook: boolean = true): Promise<boolean> {
+export async function askToContinue(isHook: boolean): Promise<boolean> {
   return await confirm({
     message: isHook 
       ? 'Vulnerabilities were found! Do you still want to continue with the commit?'
