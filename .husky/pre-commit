@@ -1,0 +1,3 @@
+# exec < /dev/tty is required to allow interactive prompts in git hooks
+exec < /dev/tty
+npx github-cli-scanner scan

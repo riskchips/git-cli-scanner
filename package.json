@@ -1,0 +1,29 @@
+{
+  "name": "github-cli-scanner",
+  "version": "1.0.0",
+  "description": "INITIAL",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup src/cli.ts --format cjs",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@inquirer/prompts": "^7.10.1",
+    "commander": "^15.0.0",
+    "husky": "^9.1.7",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "tsup": "^8.5.1",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
+  },
+  "bin": {
+    "github-cli-scanner": "dist/cli.js"
+  }
+}
