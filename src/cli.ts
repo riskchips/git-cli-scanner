@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { scanDiff } from './scanner';
+import { scanDiff, scanDirectory } from './scanner';
 import { error, success, info } from './utils/logger';
 import { askToScan, askToContinue } from './utils/prompts';
 import { Spinner } from './utils/spinner';
@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('git-cli-scanner')
   .description('Interactive Git hooks vulnerability scanner')
-  .version('1.1.6');
+  .version('1.2.0');
 
 program
   .command('init')
@@ -89,19 +89,26 @@ program
     
     try {
 
-      const spinner = new Spinner([
+      const spinnerMsgs = options.hook ? [
         'Scanning staged files for vulnerabilities...',
+        'Analyzing code patterns...',
+        'Checking for exposed API keys...',
+        'Thinking...'
+      ] : [
+        'Scanning entire repository for vulnerabilities...',
         'Analyzing code patterns...',
         'Checking for exposed API keys...',
         'Inspecting hidden files and directories...',
         'Thinking...'
-      ]);
+      ];
+
+      const spinner = new Spinner(spinnerMsgs);
       spinner.start();
       
       // Simulate a small delay for UX so the animation is visible
       await new Promise(resolve => setTimeout(resolve, 3000));
       
-      const issues = await scanDiff();
+      const issues = options.hook ? await scanDiff() : await scanDirectory(process.cwd());
       
       if (issues.length > 0) {
         // Filter out dummy issues from blocking the commit, but still print them
