@@ -1,123 +1,90 @@
 # Git CLI Scanner
 
-A powerful, interactive CLI tool that scans your codebase for hardcoded secrets, API keys, passwords, private keys, and other vulnerabilities before they ever reach your Git history.
+A powerful CLI tool that scans your codebase for hardcoded secrets, API keys, passwords, and private keys before they reach your Git history.
 
 ---
 
 ## Installation
 
 ```bash
+# Install globally
 npm install -g git-cli-scanner
+
+# Or use directly with npx (no install needed)
+npx git-cli-scanner <command>
 ```
 
-## Quick Start
+---
+
+## Setup
 
 ```bash
-# Set up the pre-commit hook (one-time)
-npx git-cli-scanner init
+# Navigate to your project
+cd your-project
 
-# Now every time you run `git commit`, the scanner will automatically
-# scan your staged files and warn you if vulnerabilities are found.
-# If issues are detected, you choose whether to continue or abort.
+# Initialize the pre-commit hook
+npx git-cli-scanner init
 ```
+
+After running `init`, every time you run `git commit`, the scanner will automatically scan your staged files and warn you if any vulnerabilities are found.
 
 ---
 
 ## Commands
 
-### `init` — Enable automatic scanning
+| Command | Description |
+|---------|-------------|
+| `init` | Install the pre-commit hook for automatic scanning |
+| `disable` | Remove the pre-commit hook and stop automatic scanning |
+| `scan` | Manually scan staged files |
+| `scan --show-sol` | Scan staged files and show suggested fixes |
+| `scan-all [dir]` | Scan an entire directory recursively |
+| `scan-all [dir] --show-sol` | Scan a directory and show suggested fixes |
+| `explore` | Launch interactive file explorer TUI |
 
-Installs a Husky pre-commit hook that triggers the scanner automatically before every commit. When you run `git commit`, the scanner will:
-1. Automatically scan all staged files
-2. Show any vulnerabilities found
-3. Ask you if you want to continue or abort the commit
+### Enable automatic scanning
 
 ```bash
 npx git-cli-scanner init
 ```
 
-### `disable` — Disable automatic scanning
+Installs a pre-commit hook. After this, every `git commit` will automatically scan your staged files. If vulnerabilities are found, you choose to continue or abort.
 
-Removes the pre-commit hook so the scanner no longer runs automatically on `git commit`.
+### Disable automatic scanning
 
 ```bash
 npx git-cli-scanner disable
 ```
 
-### `scan` — Scan staged files
+Removes the pre-commit hook. The scanner will no longer run automatically on `git commit`.
 
-Scans only the files you have staged (`git add`) for vulnerabilities. This is what the pre-commit hook runs automatically. If issues are found, you get to choose whether to continue or abort.
+### Scan staged files
 
 ```bash
 npx git-cli-scanner scan
-npx git-cli-scanner scan --show-sol   # Also show suggested fixes
+npx git-cli-scanner scan --show-sol
 ```
 
-### `scan-all` — Scan an entire directory
-
-Recursively walks through a directory and scans every file for vulnerabilities. Skips `.git`, `node_modules`, `dist`, and `build` directories automatically.
+### Scan an entire directory
 
 ```bash
-npx git-cli-scanner scan-all .              # Scan current directory
-npx git-cli-scanner scan-all ./src           # Scan only src/
-npx git-cli-scanner scan-all tests --show-sol  # Scan tests/ with solutions
+npx git-cli-scanner scan-all .
+npx git-cli-scanner scan-all ./src
+npx git-cli-scanner scan-all tests --show-sol
 ```
 
-### `explore` — Interactive file explorer TUI
-
-Launch a fully interactive Terminal UI to browse your project and scan files on the fly.
+### Interactive file explorer
 
 ```bash
 npx git-cli-scanner explore
 ```
 
-**Controls:**
 | Key | Action |
 |-----|--------|
-| `Up / Down` | Move cursor through files and folders |
-| `Right / Enter` | Open a folder or scan a file |
+| `Up / Down` | Move through files and folders |
+| `Right / Enter` | Open folder or scan file |
 | `Left` | Go back to parent directory |
-| `Ctrl+C` | Exit the explorer |
-
----
-
-## Flags
-
-| Flag | Available On | Description |
-|------|-------------|-------------|
-| `--show-sol` | `scan`, `scan-all` | Show actionable fix suggestions for each vulnerability |
-
----
-
-## What It Detects
-
-### HIGH Severity (Red)
-- AWS Access Keys & Secret Keys
-- Google Cloud API Keys
-- Slack Tokens & Webhooks
-- GitHub Personal Access Tokens & OAuth Tokens
-- Stripe API Keys
-- SendGrid, Mailgun, and Twilio Tokens
-- RSA, OpenSSH, and PGP Private Keys
-- Generic API keys, passwords, and passphrases (any format like `api_key`, `api-key`, `API_KEY`, etc.)
-
-### MEDIUM Severity (Yellow)
-- `.env` files not listed in `.gitignore`
-- Banned file types: `.pem`, `.key`, `.sqlite`, `.db`, `.log`, `.p12`, `.pfx`
-- `node_modules/` committed to the repo
-
-### Dummy Detection (Dimmed)
-The scanner has a strict dummy detection engine that automatically identifies obvious test/example secrets (like `AKIAIOSFODNN7EXAMPLE` or values containing `test`, `dummy`, `sample`, etc.) and downgrades them so they don't block your workflow.
-
----
-
-## Gitignore Awareness
-
-The scanner checks if banned files (like `.env`, `.sqlite`, `.pem`) are listed in your `.gitignore` or `.npmignore`. If they are, the issue is downgraded to a safe "IGNORED" status. If they are NOT, you get a loud warning:
-
-```
-DANGER: .env is NOT in .gitignore or .npmignore!
-```
+| `Ctrl+C` | Exit |
 
 ---
 
@@ -126,8 +93,8 @@ DANGER: .env is NOT in .gitignore or .npmignore!
 | Indicator | Level | Color | Meaning |
 |-----------|-------|-------|---------|
 | `●` | HIGH | Red | Hardcoded secrets that must be removed |
-| `●` | MEDIUM | Yellow | Risky files that should be in .gitignore |
-| `○` | IGNORED (DUMMY) | Dim | Detected but identified as a test/example value |
+| `●` | MEDIUM | Yellow | Risky files not in .gitignore |
+| `○` | IGNORED | Dim | Test/example values (auto-detected) |
 
 ---
 
