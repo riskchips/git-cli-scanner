@@ -1,9 +1,8 @@
-import { createPrompt, useState, useKeypress, usePrefix, isEnterKey, isUpKey, isDownKey, makeTheme } from '@inquirer/core';
+import { createPrompt, useState, useKeypress, usePrefix, isEnterKey, isUpKey, isDownKey, usePagination } from '@inquirer/core';
 import pc from 'picocolors';
 import * as fs from 'fs';
 import * as path from 'path';
 import { scanDirectory } from '../scanner';
-import { printIssues } from './logger';
 
 export const explorePrompt = createPrompt<string, { currentDir: string }>(
   (config, done) => {
@@ -53,6 +52,7 @@ export const explorePrompt = createPrompt<string, { currentDir: string }>(
           // Scan file!
           const fullPath = path.join(currentPath, selected.nameRaw!);
           setScanningFile(fullPath);
+          setScanResult(null);
           const issues = await scanDirectory(currentPath); // We'll scan dir but filter for this file below for simplicity
           const fileIssues = issues.filter((i: any) => i.file === path.relative(process.cwd(), fullPath).replace(/\\/g, '/'));
           setScanResult(fileIssues);
@@ -64,39 +64,44 @@ export const explorePrompt = createPrompt<string, { currentDir: string }>(
         setScanResult(null);
       } else if (isUpKey(key)) {
         setSelectedIndex((prev) => (prev > 0 ? prev - 1 : choices.length - 1));
+        setScanResult(null); // Clear results when moving
       } else if (isDownKey(key)) {
         setSelectedIndex((prev) => (prev < choices.length - 1 ? prev + 1 : 0));
+        setScanResult(null); // Clear results when moving
       } else if (key.name === 'c' && key.ctrl) {
         done(''); // exit
       }
     });
 
-    let message = `${prefix} ${pc.bold('Exploring:')} ${pc.cyan(currentPath)}\n\n`;
+    const page = usePagination({
+      items: choices,
+      active: selectedIndex,
+      renderItem: ({ item, isActive }) => {
+        if (isActive) {
+          return pc.cyan(`❯ ${item.name}`);
+        }
+        return `  ${item.name}`;
+      },
+      pageSize: 15,
+      loop: false
+    });
 
-    const startIndex = Math.max(0, selectedIndex - 10);
-    const endIndex = Math.min(choices.length, startIndex + 20);
-
-    for (let i = startIndex; i < endIndex; i++) {
-      const choice = choices[i];
-      if (i === selectedIndex) {
-        message += pc.cyan(`❯ ${choice.name}\n`);
-      } else {
-        message += `  ${choice.name}\n`;
-      }
-    }
+    let message = `${prefix} ${pc.bold('Exploring:')} ${pc.cyan(currentPath)}\n\n${page}`;
 
     if (scanResult) {
-      message += `\n${pc.bold('Scan Results for ' + choices[selectedIndex].nameRaw + ':')}\n`;
+      message += `\n\n${pc.bold('Scan Results for ' + choices[selectedIndex].nameRaw + ':')}\n`;
       if (scanResult.length === 0) {
         message += pc.green('✔ No vulnerabilities found in this file.\n');
       } else {
         scanResult.forEach((issue: any) => {
           message += `  ${issue.severity === 'high' ? pc.red('● HIGH') : issue.severity === 'medium' ? pc.yellow('● MEDIUM') : pc.dim('○ DUMMY')} · ${issue.type}\n`;
-          message += `    Fix: ${pc.green(issue.solution || 'No solution provided')}\n`;
+          if (issue.solution) {
+            message += `    Fix: ${pc.green(issue.solution)}\n`;
+          }
         });
       }
     } else if (scanningFile) {
-      message += `\n${pc.yellow('Scanning...')} (Press Right Arrow to scan)\n`;
+      message += `\n\n${pc.yellow('Scanning...')} (Please wait)\n`;
     }
 
     return message;
