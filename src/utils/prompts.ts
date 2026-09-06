@@ -7,9 +7,11 @@ export async function askToScan(): Promise<boolean> {
   });
 }
 
-export async function askToContinue(): Promise<boolean> {
+export async function askToContinue(isHook: boolean = true): Promise<boolean> {
   return await confirm({
-    message: 'Vulnerabilities were found! Do you still want to continue with the commit?',
+    message: isHook 
+      ? 'Vulnerabilities were found! Do you still want to continue with the commit?'
+      : 'Vulnerabilities were found! Do you want to ignore them?',
     default: false,
   });
 }

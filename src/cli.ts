@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('git-cli-scanner')
   .description('Interactive Git hooks vulnerability scanner')
-  .version('1.1.2');
+  .version('1.1.4');
 
 program
   .command('init')
@@ -39,7 +39,7 @@ program
 # git-cli-scanner pre-commit hook
 # exec < /dev/tty is required to allow interactive prompts in git hooks
 exec < /dev/tty
-npx git-cli-scanner scan
+npx git-cli-scanner scan --hook
 `;
 
       fs.writeFileSync(hookPath, hookContent, { mode: 0o755 });
@@ -81,8 +81,9 @@ program
 
 program
   .command('scan')
-  .description('Interactive vulnerability scan for staged files')
+  .description('Scan staged files for vulnerabilities')
   .option('--show-sol', 'Show solutions for vulnerabilities')
+  .option('--hook', 'Internal flag used when running as a git hook')
   .action(async (options) => {
     info('Git CLI Scanner running...');
     
@@ -112,16 +113,16 @@ program
         printIssues(issues, options.showSol);
 
         if (blockerIssues.length === 0) {
-          info('No high or medium vulnerabilities found. Safe to commit!');
+          info(options.hook ? 'No high or medium vulnerabilities found. Safe to commit!' : 'No high or medium vulnerabilities found.');
           process.exit(0);
         }
 
-        const shouldContinue = await askToContinue();
+        const shouldContinue = await askToContinue(options.hook);
         if (shouldContinue) {
-          info('Proceeding with commit despite vulnerabilities.');
+          info(options.hook ? 'Proceeding with commit despite vulnerabilities.' : 'Proceeding despite vulnerabilities.');
           process.exit(0);
         } else {
-          error('Commit aborted. Please edit your files and try again.');
+          error(options.hook ? 'Commit aborted. Please edit your files and try again.' : 'Scan aborted. Please fix the issues.');
           process.exit(1);
         }
       } else {
