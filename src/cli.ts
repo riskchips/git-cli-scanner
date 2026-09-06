@@ -102,4 +102,50 @@ program
     }
   });
 
+program
+  .command('scan-all [dir]')
+  .description('Scan an entire directory or codebase for vulnerabilities')
+  .action(async (dir) => {
+    const scanDir = dir || process.cwd();
+    info(`Scanning directory: ${scanDir}`);
+    
+    try {
+      const spinner = new Spinner([
+        'Walking directory and reading files...',
+        'Analyzing code patterns...',
+        'Checking for exposed API keys...',
+        'Inspecting hidden files and directories...',
+        'Thinking...'
+      ]);
+      spinner.start();
+      
+      // We need to import scanDirectory dynamically or add it to imports
+      const { scanDirectory } = await import('./scanner');
+      
+      // Small UX delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const issues = await scanDirectory(scanDir);
+      
+      if (issues.length > 0) {
+        spinner.fail(`Found ${issues.length} potential vulnerabilities!`);
+        issues.forEach(issue => {
+          const pc = require('picocolors');
+          const color = issue.severity === 'high' ? pc.red : pc.yellow;
+          const severityLabel = issue.severity.toUpperCase();
+          
+          console.error(color(`\n- [${severityLabel}] [${issue.type}] File: ${issue.file}, Line: ${issue.line}`));
+          console.error(color(`  Match: ${issue.match}`));
+        });
+        process.exit(1);
+      } else {
+        spinner.stop('No vulnerabilities found. Directory is safe!');
+        process.exit(0);
+      }
+    } catch (err: any) {
+      error(`Scanner failed: ${err.message}`);
+      process.exit(1);
+    }
+  });
+
 program.parse();
