@@ -13,34 +13,31 @@ export function error(message: string) {
 }
 
 export function printIssues(issues: any[]) {
+  console.error('\n' + pc.bold('Scan Results:'));
+  
   issues.forEach(issue => {
-    let emoji = '🚨';
-    let label = '[HIGH]';
+    let indicator = '●';
+    let label = 'HIGH';
     let colorFn = pc.red;
 
     if (issue.severity === 'medium') {
-      emoji = '⚠️';
-      label = '[MEDIUM]';
+      label = 'MEDIUM';
       colorFn = pc.yellow;
     } else if (issue.severity === 'dummy') {
-      emoji = '🧪';
-      label = '[DUMMY]';
-      colorFn = pc.cyan;
+      indicator = '○';
+      label = 'IGNORED (DUMMY)';
+      colorFn = pc.dim;
     }
 
-    const title = `${emoji} ${label} ${issue.type}`;
-    
-    console.error(colorFn(`\n╭───────────────────────────────────────────────────`));
-    console.error(colorFn(`│ ${title}`));
-    console.error(colorFn(`│ 📁 File  : ${issue.file} (Line ${issue.line || 'unknown'})`));
-    
-    // Truncate match if it's too long for the box
+    // Truncate match if it's too long
     let displayMatch = issue.match.replace(/\n/g, ' ').trim();
-    if (displayMatch.length > 50) {
-      displayMatch = displayMatch.substring(0, 47) + '...';
+    if (displayMatch.length > 60) {
+      displayMatch = displayMatch.substring(0, 57) + '...';
     }
     
-    console.error(colorFn(`│ 🔎 Match : ${displayMatch}`));
-    console.error(colorFn(`╰───────────────────────────────────────────────────`));
+    console.error(`\n  ${colorFn(indicator)} ${colorFn(pc.bold(label))} ${pc.dim('·')} ${issue.type}`);
+    console.error(`    ${pc.dim('File:')}  ${issue.file}:${issue.line || '?'}`);
+    console.error(`    ${pc.dim('Match:')} ${displayMatch}`);
   });
+  console.error();
 }
