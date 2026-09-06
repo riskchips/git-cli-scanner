@@ -13,12 +13,42 @@ export const envFileScanner: Scanner = {
     const isNodeModules = diff.file.startsWith('node_modules/');
 
     if (isEnvFile || isNodeModules || bannedExtensions.some(ext => diff.file.endsWith(ext))) {
+      let isIgnored = false;
+      const fs = require('fs');
+      const path = require('path');
+      
+      try {
+        const gitIgnorePath = path.join(process.cwd(), '.gitignore');
+        if (fs.existsSync(gitIgnorePath)) {
+          const gitIgnore = fs.readFileSync(gitIgnorePath, 'utf8');
+          if (gitIgnore.includes('.env') || gitIgnore.includes(filename) || gitIgnore.includes(diff.file)) {
+            isIgnored = true;
+          }
+        }
+        
+        const npmIgnorePath = path.join(process.cwd(), '.npmignore');
+        if (fs.existsSync(npmIgnorePath)) {
+          const npmIgnore = fs.readFileSync(npmIgnorePath, 'utf8');
+          if (npmIgnore.includes('.env') || npmIgnore.includes(filename) || npmIgnore.includes(diff.file)) {
+            isIgnored = true;
+          }
+        }
+      } catch (e) {
+        // fail silently
+      }
+
+      const matchMsg = isIgnored 
+        ? `File extension/name matched banned list (but is currently in .gitignore)`
+        : `DANGER: ${filename} is NOT in .gitignore or .npmignore!`;
+        
+      const severity = isIgnored ? 'dummy' : 'medium'; // if it's ignored, downgrade to dummy so it doesn't block but still shows
+
       issues.push({
         type: 'banned-file-type',
         file: diff.file,
         line: 0,
-        match: `File extension/name matched banned list`,
-        severity: 'medium',
+        match: matchMsg,
+        severity: severity,
         solution: 'Add this file to .gitignore. If it is a template, rename it to .env.example.'
       });
     }
