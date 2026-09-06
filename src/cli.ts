@@ -3,6 +3,7 @@ import { Command } from 'commander';
 import { scanDiff } from './scanner';
 import { error, success, info } from './utils/logger';
 import { askToScan, askToContinue } from './utils/prompts';
+import { Spinner } from './utils/spinner';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -53,11 +54,16 @@ program
         process.exit(0);
       }
 
-      info('Scanning staged files for vulnerabilities...');
+      const spinner = new Spinner('Scanning staged files for vulnerabilities...');
+      spinner.start();
+      
+      // Simulate a small delay for UX so the animation is visible
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
       const issues = await scanDiff();
       
       if (issues.length > 0) {
-        error(`Found ${issues.length} potential vulnerabilities!`);
+        spinner.fail(`Found ${issues.length} potential vulnerabilities!`);
         issues.forEach(issue => {
           console.error(`\n- [${issue.type}] File: ${issue.file}, Line: ${issue.line}`);
           console.error(`  Match: ${issue.match}`);
@@ -72,7 +78,7 @@ program
           process.exit(1);
         }
       } else {
-        success('No vulnerabilities found. Safe to commit!');
+        spinner.stop('No vulnerabilities found. Safe to commit!');
         process.exit(0);
       }
     } catch (err: any) {
