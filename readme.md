@@ -32,75 +32,16 @@ npx git-cli-scanner <command>
 
 ## 🚀 Usage & Commands
 
-### 1. Enable Automatic Scanning (Pre-commit Hook)
+### Commands Overview
 
-The best way to use the scanner is to set it up as a Git pre-commit hook so it automatically scans your code every time you try to commit.
-
-```bash
-# Navigate to your project
-cd your-project
-
-# Initialize the pre-commit hook
-git-cli-scanner init
-```
-
-After running `init`, every time you run `git commit`, the scanner will automatically scan your staged files. If vulnerabilities are found, you will be prompted to either abort the commit or proceed.
-
-### 2. Disable Automatic Scanning
-
-If you no longer want the scanner to run automatically on `git commit`, you can disable it:
-
-```bash
-git-cli-scanner disable
-```
-
-### 3. Scan Staged Files Manually
-
-You can manually trigger a scan of only the files that are currently staged in Git (the files you have `git add`ed).
-
-```bash
-# Scan staged files
-git-cli-scanner scan
-
-# Scan staged files and display detailed remediation/solutions for the vulnerabilities
-git-cli-scanner scan --show-sol
-```
-
-### 4. Scan an Entire Directory
-
-You can scan an entire directory recursively. This is useful for auditing an existing codebase that hasn't been scanned before.
-
-```bash
-# Scan the current directory
-git-cli-scanner scan-all .
-
-# Scan a specific directory (e.g., ./src)
-git-cli-scanner scan-all ./src
-
-# Scan a directory and show suggested solutions
-git-cli-scanner scan-all ./tests --show-sol
-```
-
-### 5. Scan Git History (Time Travel)
-
-The history scanner rewinds your Git commits to find secrets that were leaked in the past. It parses the diffs of each commit to find the exact moment a secret was introduced.
-
-```bash
-# Scan the very last commit (default behavior)
-git-cli-scanner scan-history
-
-# Scan a specific commit by its hash
-git-cli-scanner scan-history --id <commit-hash>
-
-# Scan all commits in the last 30 days
-git-cli-scanner scan-history --since="30 days ago"
-
-# Scan the entire Git history across all branches! (Use with caution on large repos)
-git-cli-scanner scan-history --all
-
-# Scan history and show solutions
-git-cli-scanner scan-history --all --show-sol
-```
+| Command | Description | Arguments & Flags | Example Usage |
+|---------|-------------|-------------------|---------------|
+| `init` | Installs the pre-commit hook to automatically scan files on `git commit`. | None | `npx git-cli-scanner init` |
+| `disable` | Removes the pre-commit hook to stop automatic scanning. | None | `npx git-cli-scanner disable` |
+| `scan` | Manually scans the currently staged files (files added via `git add`). | `--show-sol` (Shows suggested solutions) | `npx git-cli-scanner scan`<br>`npx git-cli-scanner scan --show-sol` |
+| `scan-all` | Recursively scans an entire directory for secrets. | `<dir>` (The directory to scan)<br>`--show-sol` (Shows solutions) | `npx git-cli-scanner scan-all .`<br>`npx git-cli-scanner scan-all ./src --show-sol` |
+| `scan-history`| Scans Git commit history for leaked secrets (Time Travel). | `--id <hash>` (Scan a specific commit)<br>`--since="<time>"` (Scan from a time)<br>`--all` (Scan entire history)<br>`--show-sol` (Shows solutions) | `npx git-cli-scanner scan-history`<br>`npx git-cli-scanner scan-history --id 3a4b5c6`<br>`npx git-cli-scanner scan-history --since="30 days ago"`<br>`npx git-cli-scanner scan-history --all` |
+| `explore` | Launches an interactive Terminal User Interface (TUI) to navigate and scan files. | None | `npx git-cli-scanner explore` |
 
 ### 6. Interactive File Explorer (TUI)
 
