@@ -8,10 +8,10 @@ A powerful CLI tool that scans your codebase for hardcoded secrets, API keys, pa
 
 ```bash
 # macOS / Linux (via curl)
-curl -sL https://riskchips.github.io/git-cli-scanner-website/install.sh | bash
+curl -sL https://raw.githubusercontent.com/riskchips/git-cli-scanner/main/install.sh | bash
 
 # Windows (via PowerShell)
-iwr https://riskchips.github.io/git-cli-scanner-website/install.ps1 -useb | iex
+iwr https://raw.githubusercontent.com/riskchips/git-cli-scanner/main/install.ps1 -useb | iex
 
 # Install globally via NPM
 npm install -g git-cli-scanner
@@ -29,7 +29,10 @@ If you need to remove the scanner from your system:
 npm uninstall -g git-cli-scanner
 
 # Or if you prefer the curl method (macOS/Linux)
-curl -sL https://riskchips.github.io/git-cli-scanner-website/uninstall.sh | bash
+curl -sL https://raw.githubusercontent.com/riskchips/git-cli-scanner/main/uninstall.sh | bash
+
+# Or Windows PowerShell
+iwr https://raw.githubusercontent.com/riskchips/git-cli-scanner/main/uninstall.ps1 -useb | iex
 ```
 
 ---
