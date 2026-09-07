@@ -5,3 +5,21 @@ dist
 coverage
 .husky/_
 showcase.pdf
+*.log
+
+# Website build artifacts
+website/node_modules
+website/dist
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Test artifacts
+tests/output
