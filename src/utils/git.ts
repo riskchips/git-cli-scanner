@@ -49,6 +49,11 @@ export async function getHistoryDiffs(options: { since?: string; id?: string; al
     } else {
       if (options.all) cmd += ' --all';
       if (options.since) cmd += ` --since="${options.since}"`;
+      
+      // Default to scanning only the last commit if no options provided
+      if (!options.all && !options.since) {
+        cmd += ' -1';
+      }
     }
 
     const { stdout } = await execAsync(cmd, { maxBuffer: 1024 * 1024 * 50 }); // 50MB buffer for large histories

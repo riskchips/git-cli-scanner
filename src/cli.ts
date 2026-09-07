@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('git-cli-scanner')
   .description('Interactive Git hooks vulnerability scanner')
-  .version('1.3.0');
+  .version('1.3.1');
 
 program
   .command('init')
@@ -207,7 +207,7 @@ program
 
 program
   .command('scan-history')
-  .description('Scan Git commit history for exposed secrets')
+  .description('Scan Git commit history for exposed secrets (defaults to last commit)')
   .option('--show-sol', 'Show solutions for vulnerabilities')
   .option('--since <date>', 'Scan commits since a specific date (e.g. "30 days ago")')
   .option('--id <hash>', 'Scan a specific commit hash')
