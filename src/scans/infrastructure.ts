@@ -19,14 +19,14 @@ const rules = [
   {
     id: 'smtp-credentials',
     description: 'SMTP Email Credentials',
-    pattern: /(?:smtp|mail|sendgrid|mailgun)[\w\-]*(?:password|secret|key)[\s:=]+["'][^"'\s]+["']/i,
+    pattern: /(?:smtp|mail|sendgrid|mailgun)[\w\-]*(?:password|secret|key)[\s:=]+["']?[^"'\s]+["']?/i,
     risk: 'Attackers can use your SMTP server to send spam or phishing emails, ruining your domain reputation and incurring massive costs.',
     solution: 'Change the SMTP password via your email provider and inject it securely using a secrets manager.'
   },
   {
     id: 'terraform-helm-secret',
     description: 'Terraform / Helm Variable Secret',
-    pattern: /(?:tf_var|helm_var)_[a-zA-Z0-9_]+[\s:=]+["'][^"'\s]+["']/i,
+    pattern: /(?:tf_var|helm_var)_[a-zA-Z0-9_]+[\s:=]+["']?[^"'\s]+["']?/i,
     risk: 'Hardcoded infrastructure secrets can grant access to the underlying platform resources and services.',
     solution: 'Use a proper secrets management backend for Terraform (e.g. Vault) or pass secrets via CI/CD runners.'
   }

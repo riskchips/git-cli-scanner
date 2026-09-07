@@ -5,7 +5,7 @@ const rules = [
   {
     id: 'npm-token',
     description: 'NPM Access Token',
-    pattern: /(?:npm|NPM)[_-]?(?:token|TOKEN)[\s:=]+["'](?:npm_[a-zA-Z0-9]{36})["']/i,
+    pattern: /(?:npm|NPM)[_-]?(?:token|TOKEN)[\s:=]+["']?(?:npm_[a-zA-Z0-9]{36})["']?/i,
     risk: 'Attackers can publish malicious versions of your packages (Supply Chain Attack) to compromise all users downloading your code.',
     solution: 'Revoke the token immediately on npmjs.com and check your package versions for unauthorized releases.'
   },
@@ -19,7 +19,7 @@ const rules = [
   {
     id: 'maven-gradle-password',
     description: 'Maven/Gradle Repository Password',
-    pattern: /(?:maven|gradle|nexus|artifactory)[\w\-]*password[\s:=]+["'][a-zA-Z0-9\-_!@#$%^&*()=+]{8,}["']/i,
+    pattern: /(?:maven|gradle|nexus|artifactory)[\w\-]*password[\s:=]+["']?[a-zA-Z0-9\-_!@#$%^&*()=+]{8,}["']?/i,
     risk: 'Attackers can access your private artifact repository, steal proprietary code, or inject backdoors into your Java packages.',
     solution: 'Change your repository password and remove it from the hardcoded configuration file (e.g. settings.xml).'
   }

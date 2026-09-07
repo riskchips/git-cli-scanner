@@ -26,7 +26,7 @@ const rules = [
   {
     id: 'firebase-secret',
     description: 'Firebase API Key or Secret',
-    pattern: /firebase[_-]?(?:api[_-]?key|secret)[\s:=]+["'][a-zA-Z0-9\-_]{30,}["']/i,
+    pattern: /firebase[_-]?(?:api[_-]?key|secret)[\s:=]+["']?[a-zA-Z0-9\-_]{30,}["']?/i,
     risk: 'Attackers can bypass security rules, read/write to your Firebase database, or exhaust quotas.',
     solution: 'Revoke the key in the Firebase console and restrict new keys to specific domains or IP addresses.'
   },

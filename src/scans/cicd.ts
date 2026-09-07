@@ -19,7 +19,7 @@ const rules = [
   {
     id: 'jenkins-token',
     description: 'Jenkins Token or API Secret',
-    pattern: /(?:jenkins)[\w\-]*(?:token|secret|password)[\s:=]+["'][a-zA-Z0-9]{32}["']/i,
+    pattern: /(?:jenkins)[\w\-]*(?:token|secret|password)[\s:=]+["']?[a-zA-Z0-9]{20,}["']?/i,
     risk: 'Attackers can trigger or modify your Jenkins build pipelines, leading to malicious deployments or lateral movement.',
     solution: 'Revoke the API token in the Jenkins User Configuration page and inject secrets using the Jenkins Credentials Manager.'
   }

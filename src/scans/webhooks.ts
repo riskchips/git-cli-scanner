@@ -12,7 +12,7 @@ const rules = [
   {
     id: 'paypal-secret',
     description: 'PayPal Client Secret',
-    pattern: /paypal[_-]?(?:client[_-]?secret|secret)[\s:=]+["'][a-zA-Z0-9\-_]{30,}["']/i,
+    pattern: /paypal[_-]?(?:client[_-]?secret|secret)[\s:=]+["']?[a-zA-Z0-9\-_]{30,}["']?/i,
     risk: 'Attackers can process fraudulent payments, manipulate subscriptions, or steal transaction history.',
     solution: 'Revoke the secret in the PayPal Developer Dashboard and generate a new one.'
   },
