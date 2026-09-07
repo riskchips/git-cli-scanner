@@ -133,12 +133,17 @@ program
           process.exit(0);
         }
 
-        const shouldContinue = await askToContinue(!!options.hook);
+        if (!options.hook) {
+          error('Scan complete. Please fix the issues above.');
+          process.exit(1);
+        }
+
+        const shouldContinue = await askToContinue(true);
         if (shouldContinue) {
-          info(options.hook ? 'Proceeding with commit despite vulnerabilities.' : 'Proceeding despite vulnerabilities.');
+          info('Proceeding with commit despite vulnerabilities.');
           process.exit(0);
         } else {
-          error(options.hook ? 'Commit aborted. Please edit your files and try again.' : 'Scan aborted. Please fix the issues.');
+          error('Commit aborted. Please edit your files and try again.');
           process.exit(1);
         }
       } else {
