@@ -10,6 +10,9 @@ A powerful CLI tool that scans your codebase for hardcoded secrets, API keys, pa
 # macOS / Linux (via curl)
 curl -sL https://riskchips.github.io/git-cli-scanner-website/install.sh | bash
 
+# Windows (via PowerShell)
+iwr https://riskchips.github.io/git-cli-scanner-website/install.ps1 -useb | iex
+
 # Install globally via NPM
 npm install -g git-cli-scanner
 
