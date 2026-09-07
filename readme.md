@@ -39,7 +39,7 @@ After running `init`, every time you run `git commit`, the scanner will automati
 | `scan` | Manually scan staged files |
 | `scan --show-sol` | Scan staged files and show suggested fixes |
 | `scan-all [dir]` | Scan an entire directory recursively |
-| `scan-all [dir] --show-sol` | Scan a directory and show suggested fixes |
+| `scan-history` | Scan Git commit history for leaked secrets |
 | `explore` | Launch interactive file explorer TUI |
 
 ### Enable automatic scanning
@@ -71,6 +71,22 @@ npx git-cli-scanner scan --show-sol
 npx git-cli-scanner scan-all .
 npx git-cli-scanner scan-all ./src
 npx git-cli-scanner scan-all tests --show-sol
+```
+
+### Scan Git history (Time Travel)
+
+```bash
+# Scan the very last commit (default)
+npx git-cli-scanner scan-history
+
+# Scan a specific commit by hash
+npx git-cli-scanner scan-history --id <hash>
+
+# Scan all commits in the last 30 days
+npx git-cli-scanner scan-history --since="30 days ago"
+
+# Scan the entire Git history across all branches!
+npx git-cli-scanner scan-history --all
 ```
 
 ### Interactive file explorer
