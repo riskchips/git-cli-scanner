@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { scanDiff, scanDirectory } from './scanner';
+import { scanDiff, scanDirectory, scanHistoryDiffs } from './scanner';
 import { error, success, info } from './utils/logger';
 import { askToScan, askToContinue } from './utils/prompts';
 import { Spinner } from './utils/spinner';
@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('git-cli-scanner')
   .description('Interactive Git hooks vulnerability scanner')
-  .version('1.2.1');
+  .version('1.3.0');
 
 program
   .command('init')
@@ -201,6 +201,52 @@ program
       }
     } catch (err: any) {
       error(`Scanner failed: ${err.message}`);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('scan-history')
+  .description('Scan Git commit history for exposed secrets')
+  .option('--show-sol', 'Show solutions for vulnerabilities')
+  .option('--since <date>', 'Scan commits since a specific date (e.g. "30 days ago")')
+  .option('--id <hash>', 'Scan a specific commit hash')
+  .option('--all', 'Scan all branches and history')
+  .action(async (options) => {
+    info('Git CLI Scanner (History Mode) running...');
+    
+    try {
+      const spinnerMsgs = [
+        'Rewinding Git history...',
+        'Extracting historical diffs...',
+        'Scanning temporal anomalies...',
+        'Looking for buried secrets...',
+        'Thinking...'
+      ];
+
+      const spinner = new Spinner(spinnerMsgs);
+      spinner.start();
+      
+      // Simulate a small delay for UX
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      const issues = await scanHistoryDiffs({
+        since: options.since,
+        id: options.id,
+        all: options.all
+      });
+      
+      if (issues.length > 0) {
+        const blockerIssues = issues.filter(i => i.severity !== 'dummy');
+        spinner.fail(`Found ${issues.length} historical vulnerabilities! (${blockerIssues.length} blockers)`);
+        
+        const { printIssues } = require('./utils/logger');
+        printIssues(issues, options.showSol);
+      } else {
+        spinner.succeed('No vulnerabilities found in the scanned history!');
+      }
+    } catch (err: any) {
+      error(`History scan failed: ${err.message}`);
       process.exit(1);
     }
   });

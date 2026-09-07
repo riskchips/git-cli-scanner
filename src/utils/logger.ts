@@ -58,6 +58,9 @@ export function printIssues(issues: any[], showSolution: boolean = false) {
       
       console.error(`\n  ${colorFn(indicator)} ${colorFn(pc.bold(label))} ${pc.dim('·')} ${issue.type}`);
       console.error(`    ${pc.dim('File:')}  ${issue.file}:${issue.line || '?'}`);
+      if (issue.commitHash) {
+        console.error(`    ${pc.dim('Commit:')} ${pc.cyan(issue.commitHash)}`);
+      }
       console.error(`    ${pc.dim('Match:')} ${displayMatch}`);
       
       if (issue.risk) {

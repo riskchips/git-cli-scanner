@@ -47,3 +47,31 @@ export async function scanDirectory(dirPath: string): Promise<ScanIssue[]> {
 }
 
 export { ScanIssue };
+
+export async function scanHistoryDiffs(options: { since?: string; id?: string; all?: boolean }): Promise<ScanIssue[]> {
+  const { getHistoryDiffs } = await import('../utils/git');
+  const commitDiffs = await getHistoryDiffs(options);
+  const issues: ScanIssue[] = [];
+
+  for (const commitDiff of commitDiffs) {
+    for (const diff of commitDiff.diffs) {
+      for (const scanner of allScanners) {
+        const scannerIssues = scanner.scan(diff);
+        // Inject commit hash into each issue found
+        for (const issue of scannerIssues) {
+          issue.commitHash = commitDiff.commitHash;
+          issues.push(issue);
+        }
+      }
+    }
+  }
+
+  // Process dummy detection
+  for (const issue of issues) {
+    if (isDummySecret(issue.match)) {
+      issue.severity = 'dummy';
+    }
+  }
+
+  return issues;
+}

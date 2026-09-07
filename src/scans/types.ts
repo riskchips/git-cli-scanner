@@ -8,6 +8,7 @@ export interface ScanIssue {
   severity: 'high' | 'medium' | 'dummy';
   solution: string;
   risk?: string;
+  commitHash?: string;
 }
 
 export interface Scanner {
