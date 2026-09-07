@@ -1,13 +1,27 @@
 # Git CLI Scanner
 
-A powerful CLI tool that scans your codebase for hardcoded secrets, API keys, passwords, and private keys before they reach your Git history.
+A powerful CLI tool that scans your codebase for hardcoded secrets, API keys, passwords, private keys, database credentials, and Docker infrastructure tokens before they reach your Git history.
+
+---
+
+## What Does It Scan For?
+
+Git CLI Scanner uses regex heuristics and pattern matching to detect:
+
+- **Cloud Provider Keys**: AWS Access/Secret Keys, Google Cloud API Keys.
+- **Infrastructure & Databases**: Database Connection Strings (MongoDB, PostgreSQL, MySQL, Redis), Docker Hub Personal Access Tokens.
+- **Collaboration Tools**: Slack Tokens, Slack Webhooks, GitHub PATs, OAuth Tokens, Discord Webhooks.
+- **Private Keys**: RSA, DSA, EC, OpenSSH, PGP Private Keys.
+- **Banned Files**: Accidental commits of `.env`, `.pem`, `.sqlite`, `.log` files (unless they are explicitly added to `.gitignore`).
+
+It features an intelligent **Ignore System** (Dummy Detection) that automatically downgrades the severity of fake, dummy, or test secrets commonly used in unit tests (e.g., `1234567890abcdef`, `dummy_token`).
 
 ---
 
 ## Installation
 
 ```bash
-# Install globally
+# Install globally via NPM
 npm install -g git-cli-scanner
 
 # Or use directly with npx (no install needed)
@@ -16,83 +30,84 @@ npx git-cli-scanner <command>
 
 ---
 
-## Setup
+## 🚀 Usage & Commands
+
+### 1. Enable Automatic Scanning (Pre-commit Hook)
+
+The best way to use the scanner is to set it up as a Git pre-commit hook so it automatically scans your code every time you try to commit.
 
 ```bash
 # Navigate to your project
 cd your-project
 
 # Initialize the pre-commit hook
-npx git-cli-scanner init
+git-cli-scanner init
 ```
 
-After running `init`, every time you run `git commit`, the scanner will automatically scan your staged files and warn you if any vulnerabilities are found.
+After running `init`, every time you run `git commit`, the scanner will automatically scan your staged files. If vulnerabilities are found, you will be prompted to either abort the commit or proceed.
 
----
+### 2. Disable Automatic Scanning
 
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `init` | Install the pre-commit hook for automatic scanning |
-| `disable` | Remove the pre-commit hook and stop automatic scanning |
-| `scan` | Manually scan staged files |
-| `scan --show-sol` | Scan staged files and show suggested fixes |
-| `scan-all [dir]` | Scan an entire directory recursively |
-| `scan-history` | Scan Git commit history for leaked secrets |
-| `explore` | Launch interactive file explorer TUI |
-
-### Enable automatic scanning
+If you no longer want the scanner to run automatically on `git commit`, you can disable it:
 
 ```bash
-npx git-cli-scanner init
+git-cli-scanner disable
 ```
 
-Installs a pre-commit hook. After this, every `git commit` will automatically scan your staged files. If vulnerabilities are found, you choose to continue or abort.
+### 3. Scan Staged Files Manually
 
-### Disable automatic scanning
+You can manually trigger a scan of only the files that are currently staged in Git (the files you have `git add`ed).
 
 ```bash
-npx git-cli-scanner disable
+# Scan staged files
+git-cli-scanner scan
+
+# Scan staged files and display detailed remediation/solutions for the vulnerabilities
+git-cli-scanner scan --show-sol
 ```
 
-Removes the pre-commit hook. The scanner will no longer run automatically on `git commit`.
+### 4. Scan an Entire Directory
 
-### Scan staged files
+You can scan an entire directory recursively. This is useful for auditing an existing codebase that hasn't been scanned before.
 
 ```bash
-npx git-cli-scanner scan
-npx git-cli-scanner scan --show-sol
+# Scan the current directory
+git-cli-scanner scan-all .
+
+# Scan a specific directory (e.g., ./src)
+git-cli-scanner scan-all ./src
+
+# Scan a directory and show suggested solutions
+git-cli-scanner scan-all ./tests --show-sol
 ```
 
-### Scan an entire directory
+### 5. Scan Git History (Time Travel)
+
+The history scanner rewinds your Git commits to find secrets that were leaked in the past. It parses the diffs of each commit to find the exact moment a secret was introduced.
 
 ```bash
-npx git-cli-scanner scan-all .
-npx git-cli-scanner scan-all ./src
-npx git-cli-scanner scan-all tests --show-sol
-```
+# Scan the very last commit (default behavior)
+git-cli-scanner scan-history
 
-### Scan Git history (Time Travel)
-
-```bash
-# Scan the very last commit (default)
-npx git-cli-scanner scan-history
-
-# Scan a specific commit by hash
-npx git-cli-scanner scan-history --id <hash>
+# Scan a specific commit by its hash
+git-cli-scanner scan-history --id <commit-hash>
 
 # Scan all commits in the last 30 days
-npx git-cli-scanner scan-history --since="30 days ago"
+git-cli-scanner scan-history --since="30 days ago"
 
-# Scan the entire Git history across all branches!
-npx git-cli-scanner scan-history --all
+# Scan the entire Git history across all branches! (Use with caution on large repos)
+git-cli-scanner scan-history --all
+
+# Scan history and show solutions
+git-cli-scanner scan-history --all --show-sol
 ```
 
-### Interactive file explorer
+### 6. Interactive File Explorer (TUI)
+
+Launch an interactive Terminal User Interface (TUI) to navigate your project directory and manually select files to scan.
 
 ```bash
-npx git-cli-scanner explore
+git-cli-scanner explore
 ```
 
 | Key | Action |
@@ -106,15 +121,39 @@ npx git-cli-scanner explore
 
 ## Severity Levels
 
+The scanner categorizes findings into different severity levels:
+
 | Indicator | Level | Color | Meaning |
 |-----------|-------|-------|---------|
-| `●` | HIGH | Red | Hardcoded secrets that must be removed |
-| `●` | MEDIUM | Yellow | Risky files not in .gitignore |
-| `○` | IGNORED | Dim | Test/example values (auto-detected) |
+| `●` | HIGH | Red | Hardcoded secrets that pose a critical risk and must be removed. |
+| `●` | MEDIUM | Yellow | Risky files or configurations not safely ignored in `.gitignore`. |
+| `○` | IGNORED | Dim | Test/example values (auto-detected dummy values that pose no risk). |
 
 ---
 
-## Running Tests
+## Example Output
+
+```
+✖ Found 2 vulnerabilities! (2 blockers)
+
+Scan Results:
+
+  ● HIGH · aws-secret-key
+    File:  src/config/aws.ts:12
+    Match: aws_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEX...
+    Risk:  Compromised AWS Secret Keys grant direct access to your entire cloud infrastructure.
+
+  ● HIGH · database-connection-string
+    File:  src/db/connection.ts:5
+    Match: mongodb+srv://admin:supersecret123@cluster0.mongo...
+    Risk:  An attacker can directly connect to your database instance, allowing them to steal user data.
+```
+
+---
+
+## Running Tests Locally
+
+If you are contributing to the project, you can run the test suite using Vitest:
 
 ```bash
 npm test
