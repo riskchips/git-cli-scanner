@@ -17,6 +17,18 @@ npm install -g git-cli-scanner
 npx git-cli-scanner <command>
 ```
 
+## Uninstallation
+
+If you need to remove the scanner from your system:
+
+```bash
+# If installed via npm
+npm uninstall -g git-cli-scanner
+
+# Or if you prefer the curl method (macOS/Linux)
+curl -sL https://riskchips.github.io/git-cli-scanner-website/uninstall.sh | bash
+```
+
 ---
 
 ## Commands
