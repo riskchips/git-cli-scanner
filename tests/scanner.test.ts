@@ -15,6 +15,16 @@ describe('Scanner Modules', () => {
     expect(issues.some(i => i.type === 'aws-access-key')).toBe(true);
   });
 
+  it('detects Docker Hub Tokens', async () => {
+    const issues = await scanContent('dckr_pat_1234567890abcdefghijklmnopqr');
+    expect(issues.some(i => i.type === 'docker-hub-token')).toBe(true);
+  });
+
+  it('detects Database Connection Strings', async () => {
+    const issues = await scanContent('mongodb+srv://admin:supersecret@cluster0.mongodb.net/test');
+    expect(issues.some(i => i.type === 'database-connection-string')).toBe(true);
+  });
+
   it('detects AWS Secret Keys via heuristics', async () => {
     const issues = await scanContent('aws_secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"');
     expect(issues.some(i => i.type === 'aws-secret-key')).toBe(true);
