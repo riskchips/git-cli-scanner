@@ -44,6 +44,62 @@ const rules = [
     risk: 'Bearer tokens allow impersonation of users or service accounts to access protected REST APIs directly.',
     solution: 'Bearer tokens grant direct access to APIs. Remove it from code, revoke the session, and inject it securely at runtime.',
   },
+  {
+    id: 'telegram-bot-token',
+    description: 'Telegram Bot Token',
+    pattern: /[0-9]{9,10}:[a-zA-Z0-9_-]{35}/,
+    risk: 'Attackers can hijack your Telegram bot to spam users or read incoming messages.',
+    solution: 'Revoke the token using BotFather on Telegram and use environment variables.',
+  },
+  {
+    id: 'shopify-token',
+    description: 'Shopify Access/Custom App Token',
+    pattern: /shp(?:at|ca)_[a-fA-F0-9]{32}/,
+    risk: 'Attackers can access your Shopify store data, modify products, or access customer information.',
+    solution: 'Revoke the token in the Shopify Admin console and securely inject a new one.',
+  },
+  {
+    id: 'square-secret',
+    description: 'Square Access Token / OAuth Secret',
+    pattern: /sq0(?:atp|csp)-[0-9A-Za-z\-_]{22,43}/,
+    risk: 'Attackers can process fraudulent payments, issue refunds, or access customer data.',
+    solution: 'Rotate the secret in the Square Developer Dashboard.',
+  },
+  {
+    id: 'github-app-token',
+    description: 'GitHub App Token',
+    pattern: /(?:ghu|ghs)_[0-9a-zA-Z]{36}/,
+    risk: 'Attackers can access your repositories, push malicious code, or modify your organization settings depending on the app permissions.',
+    solution: 'Revoke the token in GitHub and configure your App to use short-lived tokens securely.',
+  },
+  {
+    id: 'openai-api-key',
+    description: 'OpenAI API Key',
+    pattern: /sk-(?:proj-|ant-)?[A-Za-z0-9]{40,48}/,
+    risk: 'Attackers can consume your AI credits, resulting in massive financial charges and potentially accessing your fine-tuned models.',
+    solution: 'Revoke the key in the OpenAI Dashboard and ensure your API keys are injected at runtime.',
+  },
+  {
+    id: 'anthropic-api-key',
+    description: 'Anthropic API Key',
+    pattern: /sk-ant-api03-[A-Za-z0-9\-_]{90,}/,
+    risk: 'Attackers can consume your Claude API credits, causing financial damage.',
+    solution: 'Revoke the API key in the Anthropic console.',
+  },
+  {
+    id: 'huggingface-token',
+    description: 'HuggingFace Token',
+    pattern: /hf_[A-Za-z0-9]{34}/,
+    risk: 'Attackers can access your private models, datasets, or consume inference API quotas.',
+    solution: 'Revoke the token in HuggingFace (Settings > Access Tokens).',
+  },
+  {
+    id: 'asana-token',
+    description: 'Asana Personal Access Token',
+    pattern: /0\/[0-9a-fA-F]{32}/,
+    risk: 'Attackers can view, modify, or delete tasks and projects across your organization.',
+    solution: 'Revoke the token in the Asana Developer Console.',
+  },
 ];
 
 export const apiKeyScanner: Scanner = {

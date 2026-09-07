@@ -22,6 +22,27 @@ const rules = [
     pattern: /(?:session)[_-]?(?:secret|key)[\s:=]+["']?[a-zA-Z0-9\-_!@#$%^&*()=+]{16,}["']?/i,
     risk: 'Attackers can forge signed session cookies, allowing them to hijack active user sessions.',
     solution: 'Change the session secret to immediately invalidate all current user sessions.'
+  },
+  {
+    id: 'supabase-key',
+    description: 'Supabase API Key (Anon / Service Role)',
+    pattern: /(?:supabase)[_-]?(?:anon|service[_-]?role)?[_-]?(?:key)?[\s:=]+["']?eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+["']?/i,
+    risk: 'Depending on the key, attackers can either spoof anonymous users or bypass RLS entirely to read/write all database data.',
+    solution: 'Rotate the key in the Supabase Dashboard (Project Settings > API).'
+  },
+  {
+    id: 'clerk-secret-key',
+    description: 'Clerk Secret Key',
+    pattern: /sk_(?:test|live)_[a-zA-Z0-9]{40,}/,
+    risk: 'Attackers can bypass authentication, access all user data, and impersonate any user.',
+    solution: 'Roll the secret key in the Clerk Dashboard and inject securely.'
+  },
+  {
+    id: 'auth0-client-secret',
+    description: 'Auth0 Client Secret',
+    pattern: /(?:auth0)[_-]?(?:client)[_-]?(?:secret)[\s:=]+["']?[a-zA-Z0-9\-_!@#$%^&*()=+]{40,}["']?/i,
+    risk: 'Attackers can impersonate your application to the Auth0 API.',
+    solution: 'Rotate the secret in the Auth0 Dashboard.'
   }
 ];
 

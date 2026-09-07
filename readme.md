@@ -61,6 +61,8 @@ The `explore` command opens a terminal-based file browser that lets you navigate
 | `aws-access-key` | AWS Access Key IDs (`AKIA...`) | High |
 | `aws-secret-key` | AWS Secret Access Keys (heuristic match) | High |
 | `gcp-api-key` | Google Cloud API Keys (`AIza...`) | High |
+| `digitalocean-token` | DigitalOcean Personal Access Tokens | High |
+| `datadog-key` | Datadog API Keys | High |
 | `firebase-secret` | Firebase API Keys / Secrets | High |
 | `firebase-service-account` | Firebase Service Account JSON (`"type": "service_account"`) | Critical |
 
@@ -71,6 +73,9 @@ The `explore` command opens a terminal-based file browser that lets you navigate
 | `jwt-secret` | JWT Secret Keys (quoted or unquoted) | High |
 | `oauth-client-secret` | OAuth Client Secrets | High |
 | `session-secret` | Session Cookie Secrets | High |
+| `supabase-key` | Supabase Anon/Service Role Keys | High |
+| `clerk-secret-key` | Clerk Secret Keys | High |
+| `auth0-client-secret` | Auth0 Client Secrets | High |
 
 ### API Keys & Tokens
 
@@ -82,6 +87,9 @@ The `explore` command opens a terminal-based file browser that lets you navigate
 | `slack-token` | Slack Bot/User Tokens (`xoxb-...`, `xoxp-...`) | High |
 | `slack-webhook` | Slack Incoming Webhook URLs | High |
 | `discord-webhook` | Discord Webhook URLs | High |
+| `telegram-bot-token` | Telegram Bot Tokens | High |
+| `shopify-token` | Shopify Access/Custom App Tokens | High |
+| `square-secret` | Square Access Tokens / OAuth Secrets | High |
 
 ### Package Registries
 
@@ -107,6 +115,8 @@ The `explore` command opens a terminal-based file browser that lets you navigate
 | `database-connection-string` | Database URLs with credentials (MongoDB, PostgreSQL, MySQL, Redis) | High |
 | `smtp-credentials` | SMTP / SendGrid / Mailgun email passwords | High |
 | `terraform-helm-secret` | Terraform (`tf_var_...`) and Helm (`helm_var_...`) variable secrets | High |
+| `ngrok-token` | Ngrok Auth Tokens | High |
+| `sentry-token` | Sentry Auth Tokens | High |
 
 ### Webhooks & Payments
 

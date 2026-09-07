@@ -13,7 +13,31 @@ const program = new Command();
 program
   .name('git-cli-scanner')
   .description('Interactive Git hooks vulnerability scanner')
-  .version('1.3.1');
+  .version('1.5.4')
+  .addHelpText('beforeAll', `
+  ╔═══════════════════════════════════════════════════════════════════════════╗
+  ║                                                                           ║
+  ║  🔍 Git CLI Scanner                                                       ║
+  ║  A powerful local vulnerability scanner for secrets and API keys.         ║
+  ║                                                                           ║
+  ╚═══════════════════════════════════════════════════════════════════════════╝
+  `)
+  .addHelpText('afterAll', `
+  Scanners Included:
+    • Cloud Providers (AWS, GCP, DigitalOcean, Datadog, Firebase)
+    • Authentication (JWT, Auth0, Supabase, Clerk, Sessions, OAuth)
+    • API Keys (Stripe, GitHub, Slack, Discord, OpenAI, HuggingFace, etc.)
+    • CI/CD (GitLab, GitHub Actions, Jenkins)
+    • Infrastructure (Docker Hub, Database URLs, SMTP, Terraform, Ngrok)
+    • Private Keys (RSA, EC, OpenSSH, PGP)
+
+  Examples:
+    $ npx git-cli-scanner scan                # Scan staged files
+    $ npx git-cli-scanner scan --show-sol     # Scan and show fixes
+    $ npx git-cli-scanner explore             # Interactive TUI scanner
+    $ npx git-cli-scanner scan-all .          # Scan current directory
+    $ npx git-cli-scanner scan-history        # Scan git history
+  `);
 
 program
   .command('init')

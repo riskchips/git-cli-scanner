@@ -29,6 +29,20 @@ const rules = [
     pattern: /(?:tf_var|helm_var)_[a-zA-Z0-9_]+[\s:=]+["']?[^"'\s]+["']?/i,
     risk: 'Hardcoded infrastructure secrets can grant access to the underlying platform resources and services.',
     solution: 'Use a proper secrets management backend for Terraform (e.g. Vault) or pass secrets via CI/CD runners.'
+  },
+  {
+    id: 'ngrok-token',
+    description: 'Ngrok Auth Token',
+    pattern: /(?:ngrok)[_-]?(?:auth[_-]?)?(?:token)?[\s:=]+["']?[a-zA-Z0-9_-]{40,50}["']?/i,
+    risk: 'Attackers can use your Ngrok account to host malicious tunnels or bypass local network security.',
+    solution: 'Revoke the token in the Ngrok Dashboard and update your configuration.'
+  },
+  {
+    id: 'sentry-token',
+    description: 'Sentry Auth Token',
+    pattern: /sntrys_[a-zA-Z0-9_-]{64}/,
+    risk: 'Attackers can access your error monitoring data, potentially exposing sensitive environment variables or stack traces.',
+    solution: 'Revoke the auth token in Sentry (Settings > Account > API > Auth Tokens).'
   }
 ];
 

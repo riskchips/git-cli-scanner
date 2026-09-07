@@ -36,6 +36,20 @@ const rules = [
     pattern: /"type"\s*:\s*"service_account"|-----BEGIN PRIVATE KEY-----/i,
     risk: 'Service accounts grant full administrative access to your Firebase project, including databases, auth, and storage.',
     solution: 'Delete the service account key in Google Cloud IAM and never commit service account JSON files. Use environment variables.'
+  },
+  {
+    id: 'digitalocean-token',
+    description: 'DigitalOcean Personal Access Token',
+    pattern: /dop_v1_[a-f0-9]{64}/,
+    risk: 'Attackers can spin up or delete Droplets, compromising your infrastructure and causing severe financial damage.',
+    solution: 'Revoke the token immediately in the DigitalOcean control panel (API > Tokens/Keys).'
+  },
+  {
+    id: 'datadog-key',
+    description: 'Datadog API / Client Key',
+    pattern: /(?:datadog|dd)[_-]?(?:api[_-]?key|client[_-]?token)[\s:=]+["']?[a-f0-9]{32}["']?/i,
+    risk: 'Attackers can pollute your observability metrics or read infrastructure configuration data.',
+    solution: 'Rotate the API key in Datadog (Organization Settings > API Keys).'
   }
 ];
 
