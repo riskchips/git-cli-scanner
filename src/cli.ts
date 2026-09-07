@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('git-cli-scanner')
   .description('Interactive Git hooks vulnerability scanner')
-  .version('1.3.0');
+  .version('1.3.1');
 
 program
   .command('init')
@@ -243,7 +243,7 @@ program
         const { printIssues } = require('./utils/logger');
         printIssues(issues, options.showSol);
       } else {
-        spinner.succeed('No vulnerabilities found in the scanned history!');
+        spinner.stop('No vulnerabilities found in the scanned history!');
       }
     } catch (err: any) {
       error(`History scan failed: ${err.message}`);
