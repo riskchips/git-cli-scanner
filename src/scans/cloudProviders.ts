@@ -23,6 +23,20 @@ const rules = [
     risk: 'Attackers can bypass quotas to abuse GCP services like Maps API or Vertex AI, causing high billing charges.',
     solution: 'Restrict the key in Google Cloud Console (APIs & Services > Credentials) to specific IP addresses/apps, or revoke it and use GCP Service Accounts.'
   },
+  {
+    id: 'firebase-secret',
+    description: 'Firebase API Key or Secret',
+    pattern: /firebase[_-]?(?:api[_-]?key|secret)[\s:=]+["'][a-zA-Z0-9\-_]{30,}["']/i,
+    risk: 'Attackers can bypass security rules, read/write to your Firebase database, or exhaust quotas.',
+    solution: 'Revoke the key in the Firebase console and restrict new keys to specific domains or IP addresses.'
+  },
+  {
+    id: 'firebase-service-account',
+    description: 'Firebase Service Account JSON (Heuristic)',
+    pattern: /"type"\s*:\s*"service_account"|-----BEGIN PRIVATE KEY-----/i,
+    risk: 'Service accounts grant full administrative access to your Firebase project, including databases, auth, and storage.',
+    solution: 'Delete the service account key in Google Cloud IAM and never commit service account JSON files. Use environment variables.'
+  }
 ];
 
 export const cloudProviderScanner: Scanner = {

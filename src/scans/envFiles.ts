@@ -8,7 +8,7 @@ export const envFileScanner: Scanner = {
     
     // Check if the file path itself is a problem
     const filename = diff.file.split('/').pop() || '';
-    const bannedExtensions = ['.pem', '.key', '.sqlite', '.db', '.log', '.p12', '.pfx'];
+    const bannedExtensions = ['.pem', '.key', '.sqlite', '.db', '.log', '.p12', '.pfx', '.crt', '.cer', '.keystore'];
     const isEnvFile = /(^|\/)\.env(\..+)?$/.test(diff.file);
     const isNodeModules = diff.file.startsWith('node_modules/');
 

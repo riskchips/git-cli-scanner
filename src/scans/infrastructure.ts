@@ -15,6 +15,20 @@ const rules = [
     pattern: /(?:postgres|mysql|mongodb(?:\+srv)?|redis):\/\/[^:\/\s]+:[^@\/\s]+@[^:\/\s]+(?::\d+)?\//,
     risk: 'An attacker can directly connect to your database instance, allowing them to steal, modify, or delete all of your user data.',
     solution: 'Remove the hardcoded database URL and read it from an environment variable (e.g., process.env.DATABASE_URL) at runtime.'
+  },
+  {
+    id: 'smtp-credentials',
+    description: 'SMTP Email Credentials',
+    pattern: /(?:smtp|mail|sendgrid|mailgun)[\w\-]*(?:password|secret|key)[\s:=]+["'][^"'\s]+["']/i,
+    risk: 'Attackers can use your SMTP server to send spam or phishing emails, ruining your domain reputation and incurring massive costs.',
+    solution: 'Change the SMTP password via your email provider and inject it securely using a secrets manager.'
+  },
+  {
+    id: 'terraform-helm-secret',
+    description: 'Terraform / Helm Variable Secret',
+    pattern: /(?:tf_var|helm_var)_[a-zA-Z0-9_]+[\s:=]+["'][^"'\s]+["']/i,
+    risk: 'Hardcoded infrastructure secrets can grant access to the underlying platform resources and services.',
+    solution: 'Use a proper secrets management backend for Terraform (e.g. Vault) or pass secrets via CI/CD runners.'
   }
 ];
 
