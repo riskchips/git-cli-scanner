@@ -100,6 +100,13 @@ const rules = [
     risk: 'Attackers can view, modify, or delete tasks and projects across your organization.',
     solution: 'Revoke the token in the Asana Developer Console.',
   },
+  {
+    id: 'npm-token',
+    description: 'NPM Access Token',
+    pattern: /npm_[a-zA-Z0-9]{36}/,
+    risk: 'Attackers can publish malicious packages under your name, leading to supply chain attacks.',
+    solution: 'Revoke the token in your NPM account settings immediately.',
+  },
 ];
 
 export const apiKeyScanner: Scanner = {

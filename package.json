@@ -1,6 +1,6 @@
 {
   "name": "git-cli-scanner",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "A powerful interactive CLI tool that scans your codebase for hardcoded secrets, API keys, passwords, and private keys before they reach your Git history.",
   "main": "dist/cli.js",
   "scripts": {
